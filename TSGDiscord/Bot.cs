@@ -91,9 +91,13 @@ namespace TSGDiscord
                         new RaidSlot("9️⃣", "DPS"),
                         new RaidSlot("🔟", "DPS")
                     });
+                    Console.WriteLine("Created signup");
                     RaidSignups.Add(signup.MessageId, signup);
+                    Console.WriteLine("Added signup");
                     _serialize();
+                    Console.WriteLine("Serialized signup");
                     await this.EditRaidSignup(signup);
+                    Console.WriteLine("Displayed signup");
                     return;
                 }
 

@@ -13,8 +13,8 @@ namespace TSGDiscord
 
         public static async Task EditRaidSignup(this DiscordSocketClient client, RaidsSignup signup)
         {
-            var channel = (SocketTextChannel) client.GetChannel(signup.ChannelId);
-            var message = (SocketUserMessage) await channel.GetMessageAsync(signup.MessageId);
+            var channel = (ITextChannel) client.GetChannel(signup.ChannelId);
+            var message = (RestUserMessage) await channel.GetMessageAsync(signup.MessageId);
 
             if (message == null)
             {
