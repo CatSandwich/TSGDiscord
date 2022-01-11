@@ -1,6 +1,11 @@
-﻿using System.Runtime.InteropServices.ComTypes;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
@@ -8,7 +13,7 @@ namespace TSGDiscord
 {
     public class Bot : DiscordSocketClient
     {
-        public Dictionary<ulong, RaidsSignup> RaidSignups = new();
+        public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
 
         public Bot()
         {
@@ -61,7 +66,7 @@ namespace TSGDiscord
 
         private Task _messageReceivedHandler(SocketMessage sm)
         {
-            Task.Run(async () =>
+            Task.Run<Task>(async () =>
             {
                 if (sm.Content == "sendmessage")
                 {
@@ -74,17 +79,17 @@ namespace TSGDiscord
                     var message = await sm.Channel.SendMessageAsync("Creating...");
                     var signup = new RaidsSignup(sm.Channel.Id, message.Id, new RaidSlot[]
                     {
-                        new("1️⃣", "Chrono Tank / Quick"),
-                        new("2️⃣", "Druid"),
-                        new("3️⃣", "Banner Slave"),
-                        new("4️⃣", "DPS"),
-                        new("5️⃣", "DPS"),
+                        new RaidSlot("1️⃣", "Chrono Tank / Quick"),
+                        new RaidSlot("2️⃣", "Druid"),
+                        new RaidSlot("3️⃣", "Banner Slave"),
+                        new RaidSlot("4️⃣", "DPS"),
+                        new RaidSlot("5️⃣", "DPS"),
 
-                        new("6️⃣", "Mirage / Alac"),
-                        new("7️⃣", "HB / Quick"),
-                        new("8️⃣", "DPS"),
-                        new("9️⃣", "DPS"),
-                        new("🔟", "DPS")
+                        new RaidSlot("6️⃣", "Mirage / Alac"),
+                        new RaidSlot("7️⃣", "HB / Quick"),
+                        new RaidSlot("8️⃣", "DPS"),
+                        new RaidSlot("9️⃣", "DPS"),
+                        new RaidSlot("🔟", "DPS")
                     });
                     RaidSignups.Add(signup.MessageId, signup);
                     _serialize();
@@ -99,7 +104,7 @@ namespace TSGDiscord
 
         private Task _reactionAddedHandler(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
-            Task.Run(async () =>
+            Task.Run<Task>(async () =>
             {
                 if (!reaction.User.IsSpecified || reaction.User.Value.IsBot) return;
                 if (!RaidSignups.TryGetValue((await message.GetOrDownloadAsync()).Id, out var signup)) return;
@@ -108,7 +113,7 @@ namespace TSGDiscord
                 var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
 
                 // If slot is not empty or user is already signed up, remove reaction
-                if (slot is not { User: null } || signup.Slots.Count(s => s.User == reaction.UserId) > 0)
+                if (!(slot is { User: null }) || signup.Slots.Count(s => s.User == reaction.UserId) > 0)
                 {
                     var msg = await message.GetOrDownloadAsync();
                     await msg.RemoveReactionAsync(reaction.Emote, reaction.UserId);
