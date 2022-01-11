@@ -6,6 +6,9 @@
 # Don't upload signups - keeps testing menus separate from production
 **/signups.dat
 
+# Ignore the entry point - contains the token
+**/Program.cs
+
 # User-specific files
 *.rsuser
 *.suo
