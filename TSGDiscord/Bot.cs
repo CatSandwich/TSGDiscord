@@ -101,6 +101,8 @@ namespace TSGDiscord
 
                 await Commands.ReturnTimeToDailyReset(sm, this);
 
+                await Commands.PrintAllParticipationScores(sm, this);
+
             });
 
             return Task.CompletedTask;

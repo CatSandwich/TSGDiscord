@@ -10,6 +10,21 @@ namespace TSGDiscord
 {
     public static class Commands
     {
+        public static async Task ReturnTimeToDailyReset(SocketMessage sm, Bot bot)
+        {
+            if (sm.Content.ToLower().StartsWith("!timeuntilreset"))
+            {
+                Console.WriteLine("test");
+
+                DateTime now = DateTime.UtcNow;
+                DateTime reset = new DateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0);
+
+                TimeSpan timeRemaining = now.Subtract(reset);
+
+                await sm.Channel.SendMessageAsync("The Time Remaining Until Daily Reset Is: " + timeRemaining);
+            }
+        }
+
         public static async Task RemovePaps(SocketMessage sm, Bot bot)
         {
             if (sm.Content.ToLower().StartsWith("!removepap"))
@@ -124,20 +139,24 @@ namespace TSGDiscord
             }
         }
 
-        public static async Task ReturnTimeToDailyReset(SocketMessage sm, Bot bot)
+        public static async Task PrintAllParticipationScores(SocketMessage sm, Bot bot)
         {
-            if (sm.Content.ToLower().StartsWith("!timeuntilreset"))
+            if (sm.Content.ToLower().StartsWith("!printallpaps"))
             {
-                Console.WriteLine("test");
+                if (Utils.IsUserOfficer(sm))
+                {
+                    string allUsers = "";
 
-                DateTime now = DateTime.UtcNow;
-                DateTime reset = new DateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0);
+                    foreach (var id in bot.Participation)
+                    {
+                        allUsers += ("User: {0},  Participation Score: {1} \n", id.Key, id.Value);
+                    }
 
-                TimeSpan timeRemaining = now.Subtract(reset);
+                    Console.WriteLine(allUsers);
 
-                await sm.Channel.SendMessageAsync("The Time Remaining Until Daily Reset Is: " + timeRemaining);
+                    await sm.Channel.SendMessageAsync("Done!");
+                }
             }
         }
-
     }
 }
