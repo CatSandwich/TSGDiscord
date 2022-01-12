@@ -37,22 +37,17 @@ namespace TSGDiscord
 
         public static async Task RaidSignup(SocketMessage sm, Bot bot)
         {
-            if (sm.Content == "raidsignup")
+            if (sm.Content == "!raidsignup")
             {
                 var message = await sm.Channel.SendMessageAsync("Creating...");
                 var signup = new RaidsSignup(sm.Channel.Id, message.Id, new[]
                 {
-                    new RaidSlot("1️⃣", "Chrono Tank / Quick"),
-                    new RaidSlot("2️⃣", "Druid"),
-                    new RaidSlot("3️⃣", "Banner Slave"),
-                    new RaidSlot("4️⃣", "DPS"),
-                    new RaidSlot("5️⃣", "DPS"),
-
-                    new RaidSlot("6️⃣", "Mirage / Alac"),
-                    new RaidSlot("7️⃣", "HB / Quick"),
-                    new RaidSlot("8️⃣", "DPS"),
-                    new RaidSlot("9️⃣", "DPS"),
-                    new RaidSlot("🔟", "DPS")
+                    new RaidSlot("1️⃣", "Chrono Tank / Quick", 1),
+                    new RaidSlot("2️⃣", "Druid", 1),
+                    new RaidSlot("3️⃣", "Banner Slave", 1),
+                    new RaidSlot("4️⃣", "Mirage / Alac", 1),
+                    new RaidSlot("5️⃣", "HB / Quick", 1),
+                    new RaidSlot("6️⃣", "DPS", 5)
                 });
                 bot.RaidSignups.Add(signup.MessageId, signup);
                 bot.Serialize();

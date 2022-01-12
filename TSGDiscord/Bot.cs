@@ -120,7 +120,7 @@ namespace TSGDiscord
                     return;
                 }
 
-                slot.User = reaction.UserId;
+                slot.Users.Add(reaction.UserId);
                 Serialize();
                 await this.EditRaidSignup(signup);
             });
@@ -143,7 +143,7 @@ namespace TSGDiscord
                     return;
                 };
 
-                slot.User = null;
+                slot.Users.Remove(reaction.UserId);
                 Serialize();
                 await this.EditRaidSignup(signup);
             });
