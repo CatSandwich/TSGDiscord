@@ -12,6 +12,7 @@ namespace TSGDiscord
     public class Bot : DiscordSocketClient
     {
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
+        public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
         public Bot()
         {
@@ -20,6 +21,7 @@ namespace TSGDiscord
             ReactionAdded += _reactionAddedHandler;
             ReactionRemoved += _reactionRemovedHandler;
             _deserialize();
+            _deserializeParticipation();
         }
 
         public async Task Run(string token)
@@ -41,6 +43,12 @@ namespace TSGDiscord
             var binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(stream, RaidSignups.Values.ToArray());
         }
+        private void _serializeParticipation()
+        {
+            using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Create);
+            var binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(stream, Participation);
+        }
 
         private void _deserialize()
         {
@@ -55,6 +63,21 @@ namespace TSGDiscord
             catch (FileNotFoundException)
             {
                 Console.WriteLine("No signup data found.");
+            }
+        }
+
+        private void _deserializeParticipation()
+        {
+            try
+            {
+                using var stream = File.Open(Config.RaidsSignupDataPath, FileMode.Open);
+                var binaryFormatter = new BinaryFormatter();
+                var participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
+                Console.WriteLine("Deserialized Successfully");
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("No participation data found.");
             }
         }
 
@@ -90,7 +113,25 @@ namespace TSGDiscord
                     await this.EditRaidSignup(signup);
                     return;
                 }
+
+                if (sm.Content.ToLower().StartsWith("!pap"))
+                {
+                    await sm.Channel.SendMessageAsync("Message Recieved");
+
+                    foreach (var id in sm.Content.GetMentions())
+                    {
+                        Participation[id]++;
+
+                        string s = id.ToString();
+                        await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {Participation[id]}");
+                    }
+
+                    _serializeParticipation();
+
+                    await sm.Channel.SendMessageAsync("Message Recieved");
+                }
             });
+
             return Task.CompletedTask;
         }
 
