@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
@@ -26,6 +27,14 @@ namespace TSGDiscord
             }
 
             return ulong.TryParse(mention[3..^1], out id);
+        }
+
+        public static ulong[] GetMentions(this string msg)
+        {
+            var regex = new Regex("<@!(\\d+)>");
+            return regex.Matches(msg)
+                .Select(match => ulong.Parse(match.Groups[1].Value))
+                .ToArray();
         }
 
         public static async Task EditRaidSignup(this DiscordSocketClient client, RaidsSignup signup)
