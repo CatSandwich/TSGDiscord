@@ -114,8 +114,10 @@ namespace TSGDiscord
                     return;
                 }
 
-                if (sm.Content.StartsWith("!Pap") || sm.Content.StartsWith("!pap"))
+                if (sm.Content.ToLower().StartsWith("!pap"))
                 {
+                    await sm.Channel.SendMessageAsync("Message Recieved");
+
                     foreach (var id in sm.Content.GetMentions())
                     {
                         Participation[id]++;
