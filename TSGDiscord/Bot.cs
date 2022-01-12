@@ -72,8 +72,8 @@ namespace TSGDiscord
             {
                 using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Open);
                 var binaryFormatter = new BinaryFormatter();
-                var participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
-                Console.WriteLine("Deserialized Successfully");
+                Participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
+                Console.WriteLine($"{Participation.Count} participation entries loaded.");
             }
             catch (FileNotFoundException)
             {
