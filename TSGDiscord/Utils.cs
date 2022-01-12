@@ -11,6 +11,23 @@ namespace TSGDiscord
     {
         public static string Mention(this ulong id) => $"<@!{id}>";
 
+        public static bool TryParseMention(string mention, out ulong id)
+        {
+            if (!mention.StartsWith("<@!"))
+            {
+                id = 0;
+                return false;
+            }
+
+            if (!mention.EndsWith(">"))
+            {
+                id = 0;
+                return false;
+            }
+
+            return ulong.TryParse(mention[3..^1], out id);
+        }
+
         public static async Task EditRaidSignup(this DiscordSocketClient client, RaidsSignup signup)
         {
             var channel = (ITextChannel) client.GetChannel(signup.ChannelId);
