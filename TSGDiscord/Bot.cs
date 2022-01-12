@@ -96,17 +96,12 @@ namespace TSGDiscord
                     var message = await sm.Channel.SendMessageAsync("Creating...");
                     var signup = new RaidsSignup(sm.Channel.Id, message.Id, new[]
                     {
-                        new RaidSlot("1️⃣", "Chrono Tank / Quick"),
-                        new RaidSlot("2️⃣", "Druid"),
-                        new RaidSlot("3️⃣", "Banner Slave"),
-                        new RaidSlot("4️⃣", "DPS"),
-                        new RaidSlot("5️⃣", "DPS"),
-
-                        new RaidSlot("6️⃣", "Mirage / Alac"),
-                        new RaidSlot("7️⃣", "HB / Quick"),
-                        new RaidSlot("8️⃣", "DPS"),
-                        new RaidSlot("9️⃣", "DPS"),
-                        new RaidSlot("🔟", "DPS")
+                        new RaidSlot("1️⃣", "Chrono Tank / Quick", 1),
+                        new RaidSlot("2️⃣", "Druid", 1),
+                        new RaidSlot("3️⃣", "Banner Slave", 1),
+                        new RaidSlot("4️⃣", "Mirage / Alac", 1),
+                        new RaidSlot("5️⃣", "HB / Quick", 1),
+                        new RaidSlot("6️⃣", "DPS", 5)
                     });
                     RaidSignups.Add(signup.MessageId, signup);
                     _serialize();
@@ -146,15 +141,17 @@ namespace TSGDiscord
                 // Get slot of corresponding emoji
                 var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
 
-                // If slot is not empty or user is already signed up, remove reaction
-                if (!(slot is { User: null }) || signup.Slots.Count(s => s.User == reaction.UserId) > 0)
+                // If slot doesn't exist, ignore
+                // If slot is full, ignore
+                // If user is already signed up, ignore
+                if (slot is null || slot.Users.Count >= slot.Size || signup.Slots.Any(s => s.Users.Contains(reaction.UserId)))
                 {
                     var msg = await message.GetOrDownloadAsync();
                     await msg.RemoveReactionAsync(reaction.Emote, reaction.UserId);
                     return;
                 }
 
-                slot.User = reaction.UserId;
+                slot.Users.Add(reaction.UserId);
                 _serialize();
                 await this.EditRaidSignup(signup);
             });
@@ -171,13 +168,13 @@ namespace TSGDiscord
                 var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
 
                 // If no corresponding slot, ignore
-                // If slot isn't filled by user, ignore
-                if (slot == null || slot.User != reaction.UserId)
+                // If user not in slot, ignore
+                if (slot == null || !slot.Users.Contains(reaction.UserId))
                 {
                     return;
                 };
 
-                slot.User = null;
+                slot.Users.Remove(reaction.UserId);
                 _serialize();
                 await this.EditRaidSignup(signup);
             });
