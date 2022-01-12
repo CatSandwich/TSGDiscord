@@ -70,7 +70,7 @@ namespace TSGDiscord
         {
             try
             {
-                using var stream = File.Open(Config.RaidsSignupDataPath, FileMode.Open);
+                using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Open);
                 var binaryFormatter = new BinaryFormatter();
                 var participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
                 Console.WriteLine("Deserialized Successfully");
@@ -120,9 +120,10 @@ namespace TSGDiscord
 
                     foreach (var id in sm.Content.GetMentions())
                     {
-                        Participation[id]++;
+                        if (!Participation.ContainsKey(id)) Participation[id] = 0;
 
-                        string s = id.ToString();
+                        Participation[id]++;
+                        Console.WriteLine("Here");
                         await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {Participation[id]}");
                     }
 
