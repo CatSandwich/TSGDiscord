@@ -12,6 +12,7 @@ namespace TSGDiscord
     public class Bot : DiscordSocketClient
     {
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
+        public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
         public Bot()
         {
@@ -41,6 +42,12 @@ namespace TSGDiscord
             var binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(stream, RaidSignups.Values.ToArray());
         }
+        private void _serializeParticipation()
+        {
+            using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Create);
+            var binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(stream, Participation);
+        }
 
         private void _deserialize()
         {
@@ -55,6 +62,21 @@ namespace TSGDiscord
             catch (FileNotFoundException)
             {
                 Console.WriteLine("No signup data found.");
+            }
+        }
+
+        private void _deserializeParticipation()
+        {
+            try
+            {
+                using var stream = File.Open(Config.RaidsSignupDataPath, FileMode.Open);
+                var binaryFormatter = new BinaryFormatter();
+                var participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
+                Console.WriteLine("Deserialized Successfully");
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("No participation data found.");
             }
         }
 
@@ -89,6 +111,11 @@ namespace TSGDiscord
                     _serialize();
                     await this.EditRaidSignup(signup);
                     return;
+                }
+
+                if (sm.Content == "!Pap")
+                {
+                    await sm.Channel.SendMessageAsync("Message Recieved");
                 }
             });
             return Task.CompletedTask;
