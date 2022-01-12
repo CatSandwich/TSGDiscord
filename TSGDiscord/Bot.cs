@@ -15,6 +15,17 @@ namespace TSGDiscord
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
         public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
+        public Dictionary<string, Func<Bot, SocketMessage, Task>> Commands =
+            new Dictionary<string, Func<Bot, SocketMessage, Task>>()
+            {
+                ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
+                ["removepap"] = TSGDiscord.Commands.RemovePaps,
+                ["pap"] = TSGDiscord.Commands.AddOnePaP,
+                ["setpap"] = TSGDiscord.Commands.SetUserPaps,
+                ["raidsignup"] = TSGDiscord.Commands.RaidSignup,
+                ["printallpaps"] = TSGDiscord.Commands.PrintAllParticipationScores,
+            };
+
         public Bot()
         {
             Log += _log;
@@ -83,29 +94,29 @@ namespace TSGDiscord
             }
         }
 
-        private Task _messageReceivedHandler(SocketMessage sm)
+        private async Task _messageReceivedHandler(SocketMessage sm)
         {
-            Task.Run<Task>(async () =>
+            if (sm.Author.IsBot) return;
+
+            // Command handling
+            foreach (var (name, handler) in Commands)
             {
-                //Commands Go Here
+                if (sm.Content.ToLower().StartsWith($"{Config.Prefix}{name}"))
+                {
+                    // Assign to variable to suppress warning
+                    var task = Task.Run(async () =>
+                    {
+                        try { await handler(this, sm); }
+                        catch (Exception ex) { Console.WriteLine($"Exception in command {name}: {ex}"); }
+                    });
+                }
+            }
 
-                await Commands.RemovePaps(sm, this);
-
-                await Commands.RaidSignup(sm, this);
-
-                await Commands.AddOnePaP(sm, this);
-
-                await Commands.SetUserPaps(sm, this);
-
-                await Commands.PraiseJoko(sm, this);
-
-                await Commands.ReturnTimeToDailyReset(sm, this);
-
-                await Commands.PrintAllParticipationScores(sm, this);
-
-            });
-
-            return Task.CompletedTask;
+            // Praise joko
+            if (sm.Content.ToLower().Contains("praise joko"))
+            {
+                await sm.Channel.SendMessageAsync("Praise Joko!");
+            }
         }
 
         private Task _reactionAddedHandler(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)

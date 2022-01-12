@@ -4,6 +4,8 @@ namespace TSGDiscord
 {
     public static class Config
     {
+        public const string Prefix = "!";
+
         public static readonly string RaidsSignupDataPath = @$"{Directory.GetCurrentDirectory()}\signups.dat";
         public static readonly string ParticipationTrackingDataPath = @$"{Directory.GetCurrentDirectory()}\participation.dat";
 
