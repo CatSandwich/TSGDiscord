@@ -21,6 +21,7 @@ namespace TSGDiscord
             ReactionAdded += _reactionAddedHandler;
             ReactionRemoved += _reactionRemovedHandler;
             _deserialize();
+            _deserializeParticipation();
         }
 
         public async Task Run(string token)
@@ -113,11 +114,22 @@ namespace TSGDiscord
                     return;
                 }
 
-                if (sm.Content == "!Pap")
+                if (sm.Content.StartsWith("!Pap") || sm.Content.StartsWith("!pap"))
                 {
+                    foreach (var id in sm.Content.GetMentions())
+                    {
+                        Participation[id]++;
+
+                        string s = id.ToString();
+                        await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {Participation[id]}");
+                    }
+
+                    _serializeParticipation();
+
                     await sm.Channel.SendMessageAsync("Message Recieved");
                 }
             });
+
             return Task.CompletedTask;
         }
 
