@@ -95,6 +95,10 @@ namespace TSGDiscord
 
                 await Commands.AddOnePaP(sm, this);
 
+                await Commands.SetUserPaps(sm, this);
+
+                await Commands.PraiseJoko(sm, this);
+
             });
 
             return Task.CompletedTask;

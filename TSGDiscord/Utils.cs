@@ -59,5 +59,37 @@ namespace TSGDiscord
                 await message.AddReactionAsync(new Emoji(emoji));
             }
         }
+
+        public static int ReturnIntBetweenBrackets(string msg)
+        {
+            int stringFrom = msg.IndexOf("(") + "(".Length;
+            int stringTo = msg.LastIndexOf(")");
+
+            string input = msg.Substring(stringFrom, stringTo - stringFrom);
+
+            if (int.TryParse(input, out int num))
+            {
+                return num;
+            }
+            else
+            {
+                num = -1;
+                return num;
+            }
+        }
+
+        public static bool IsUserOfficer(SocketMessage sm)
+        {
+            if (sm.Author is SocketGuildUser user)
+            {
+                if (user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id)))
+                {
+                    return true;
+                }
+
+            }
+
+            return false;
+        }
     }
 }
