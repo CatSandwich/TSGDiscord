@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Discord;
 
 namespace TSGDiscord
@@ -30,14 +32,34 @@ namespace TSGDiscord
     {
         public string Emoji;
         public string Name;
-        public ulong? User;
+        public int Size;
+        public List<ulong> Users;
 
-        public RaidSlot(string emoji, string name)
+        public RaidSlot(string emoji, string name, int size)
         {
             Emoji = emoji;
             Name = name;
+            Size = size;
+            Users = new List<ulong>(size);
         }
 
-        public override string ToString() => $"{Emoji} {Name}: {User?.Mention() ?? "Open"}";
+        public override string ToString()
+        {
+            var sb = new StringBuilder($"{Emoji} {Name} ");
+            sb.Append($"({Size - Users.Count} open): ");
+
+            var slots = new List<string>();
+            for (var i = 0; i < Users.Count; i++)
+            {
+                slots.Add(Users[i].Mention());
+            }
+            for (var i = Users.Count; i < Size; i++)
+            {
+                slots.Add("Open");
+            }
+            sb.Append(string.Join(", ", slots));
+
+            return sb.ToString();
+        }
     }
 }

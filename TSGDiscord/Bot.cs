@@ -110,8 +110,10 @@ namespace TSGDiscord
                 // Get slot of corresponding emoji
                 var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
 
-                // If slot is not empty or user is already signed up, remove reaction
-                if (!(slot is { User: null }) || signup.Slots.Count(s => s.User == reaction.UserId) > 0)
+                // If slot doesn't exist, ignore
+                // If slot is full, ignore
+                // If user is already signed up, ignore
+                if (slot is null || slot.Users.Count >= slot.Size || signup.Slots.Any(s => s.Users.Contains(reaction.UserId)))
                 {
                     var msg = await message.GetOrDownloadAsync();
                     await msg.RemoveReactionAsync(reaction.Emote, reaction.UserId);
@@ -135,8 +137,8 @@ namespace TSGDiscord
                 var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
 
                 // If no corresponding slot, ignore
-                // If slot isn't filled by user, ignore
-                if (slot == null || slot.User != reaction.UserId)
+                // If user not in slot, ignore
+                if (slot == null || !slot.Users.Contains(reaction.UserId))
                 {
                     return;
                 };
