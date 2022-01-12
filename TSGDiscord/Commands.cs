@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
@@ -119,8 +120,22 @@ namespace TSGDiscord
         {
             if (sm.Content.ToLower().Contains("praise joko"))
             {
-                Console.WriteLine("test");
                 await sm.Channel.SendMessageAsync("Praise Joko!");
+            }
+        }
+
+        public static async Task ReturnTimeToDailyReset(SocketMessage sm, Bot bot)
+        {
+            if (sm.Content.ToLower().StartsWith("!timeuntilreset"))
+            {
+                Console.WriteLine("test");
+
+                DateTime now = DateTime.UtcNow;
+                DateTime reset = new DateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0);
+
+                TimeSpan timeRemaining = now.Subtract(reset);
+
+                await sm.Channel.SendMessageAsync("The Time Remaining Until Daily Reset Is: " + timeRemaining);
             }
         }
 

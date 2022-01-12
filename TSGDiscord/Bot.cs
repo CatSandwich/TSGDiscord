@@ -99,6 +99,8 @@ namespace TSGDiscord
 
                 await Commands.PraiseJoko(sm, this);
 
+                await Commands.ReturnTimeToDailyReset(sm, this);
+
             });
 
             return Task.CompletedTask;
