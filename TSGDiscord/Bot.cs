@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -28,10 +26,6 @@ namespace TSGDiscord
         {
             await LoginAsync(TokenType.Bot, token);
             await StartAsync();
-
-            var raidsChannel = (ITextChannel) await GetChannelAsync(Config.RaidsSignupChannel);
-            var message = await raidsChannel.GetMessageAsync(Config.RaidsSignupMessage);
-
             await Task.Delay(-1);
         }
 
@@ -77,7 +71,7 @@ namespace TSGDiscord
                 if (sm.Content == "raidsignup")
                 {
                     var message = await sm.Channel.SendMessageAsync("Creating...");
-                    var signup = new RaidsSignup(sm.Channel.Id, message.Id, new RaidSlot[]
+                    var signup = new RaidsSignup(sm.Channel.Id, message.Id, new[]
                     {
                         new RaidSlot("1️⃣", "Chrono Tank / Quick"),
                         new RaidSlot("2️⃣", "Druid"),
@@ -91,17 +85,11 @@ namespace TSGDiscord
                         new RaidSlot("9️⃣", "DPS"),
                         new RaidSlot("🔟", "DPS")
                     });
-                    Console.WriteLine("Created signup");
                     RaidSignups.Add(signup.MessageId, signup);
-                    Console.WriteLine("Added signup");
                     _serialize();
-                    Console.WriteLine("Serialized signup");
                     await this.EditRaidSignup(signup);
-                    Console.WriteLine("Displayed signup");
                     return;
                 }
-
-                Console.WriteLine("Message");
             });
             return Task.CompletedTask;
         }
