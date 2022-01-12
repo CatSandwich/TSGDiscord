@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Discord;
@@ -20,8 +21,8 @@ namespace TSGDiscord
             MessageReceived += _messageReceivedHandler;
             ReactionAdded += _reactionAddedHandler;
             ReactionRemoved += _reactionRemovedHandler;
-            _deserialize();
-            _deserializeParticipation();
+            Deserialize();
+            DeserializeParticipation();
         }
 
         public async Task Run(string token)
@@ -37,20 +38,21 @@ namespace TSGDiscord
             return Task.CompletedTask;
         }
 
-        private void _serialize()
+        public void Serialize()
         {
             using var stream = File.Open(Config.RaidsSignupDataPath, FileMode.Create);
             var binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(stream, RaidSignups.Values.ToArray());
         }
-        private void _serializeParticipation()
+
+        public void SerializeParticipation()
         {
             using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Create);
             var binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(stream, Participation);
         }
 
-        private void _deserialize()
+        public void Deserialize()
         {
             try
             {
@@ -66,7 +68,7 @@ namespace TSGDiscord
             }
         }
 
-        private void _deserializeParticipation()
+        public void DeserializeParticipation()
         {
             try
             {
@@ -85,52 +87,14 @@ namespace TSGDiscord
         {
             Task.Run<Task>(async () =>
             {
-                if (sm.Content == "sendmessage")
-                {
-                    await sm.Channel.SendMessageAsync("Message");
-                    return;
-                }
+                //Commands Go Here
 
-                if (sm.Content == "raidsignup")
-                {
-                    var message = await sm.Channel.SendMessageAsync("Creating...");
-                    var signup = new RaidsSignup(sm.Channel.Id, message.Id, new[]
-                    {
-                        new RaidSlot("1️⃣", "Chrono Tank / Quick"),
-                        new RaidSlot("2️⃣", "Druid"),
-                        new RaidSlot("3️⃣", "Banner Slave"),
-                        new RaidSlot("4️⃣", "DPS"),
-                        new RaidSlot("5️⃣", "DPS"),
+                await Commands.RemovePaps(sm, this);
 
-                        new RaidSlot("6️⃣", "Mirage / Alac"),
-                        new RaidSlot("7️⃣", "HB / Quick"),
-                        new RaidSlot("8️⃣", "DPS"),
-                        new RaidSlot("9️⃣", "DPS"),
-                        new RaidSlot("🔟", "DPS")
-                    });
-                    RaidSignups.Add(signup.MessageId, signup);
-                    _serialize();
-                    await this.EditRaidSignup(signup);
-                    return;
-                }
+                await Commands.RaidSignup(sm, this);
 
-                if (sm.Content.ToLower().StartsWith("!pap"))
-                {
-                    await sm.Channel.SendMessageAsync("Message Recieved");
+                await Commands.AddOnePaP(sm, this);
 
-                    foreach (var id in sm.Content.GetMentions())
-                    {
-                        if (!Participation.ContainsKey(id)) Participation[id] = 0;
-
-                        Participation[id]++;
-                        Console.WriteLine("Here");
-                        await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {Participation[id]}");
-                    }
-
-                    _serializeParticipation();
-
-                    await sm.Channel.SendMessageAsync("Message Recieved");
-                }
             });
 
             return Task.CompletedTask;
@@ -155,7 +119,7 @@ namespace TSGDiscord
                 }
 
                 slot.User = reaction.UserId;
-                _serialize();
+                Serialize();
                 await this.EditRaidSignup(signup);
             });
             return Task.CompletedTask;
@@ -178,7 +142,7 @@ namespace TSGDiscord
                 };
 
                 slot.User = null;
-                _serialize();
+                Serialize();
                 await this.EditRaidSignup(signup);
             });
             return Task.CompletedTask;
