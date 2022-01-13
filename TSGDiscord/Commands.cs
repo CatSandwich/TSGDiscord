@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
@@ -28,76 +25,59 @@ namespace TSGDiscord
 
         public static async Task RemovePaps(Bot bot, SocketMessage sm)
         {
-            if (sm.Author is SocketGuildUser user)
+            if (!sm.IsFromOfficer())
             {
-                if (user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id)))
-                {
-                    foreach (var id in sm.Content.GetMentions())
-                    {
-                        if (bot.Participation.ContainsKey(id))
-                        {
-                            bot.Participation[id] = 0;
+                await sm.Channel.SendMessageAsync("Only officers may use this command.");
+                return;
+            }
 
-                            await sm.Channel.SendMessageAsync(
-                                $"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
-
-                            bot.SerializeParticipation();
-                        }
-                    }
-
-                }
+            foreach (var id in sm.Content.GetMentions())
+            {
+                bot.Participation[id] = 0;
+                await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+                bot.SerializeParticipation();
             }
         }
 
         public static async Task AddOnePaP(Bot bot, SocketMessage sm)
         {
-            if (sm.Author is SocketGuildUser user)
+            if (!sm.IsFromOfficer())
             {
-                if (user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id)))
-                {
-                    foreach (var id in sm.Content.GetMentions())
-                    {
-                        if (!bot.Participation.ContainsKey(id)) bot.Participation[id] = 0;
-
-                        bot.Participation[id]++;
-                        Console.WriteLine("Here");
-                        await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
-                    }
-
-                    bot.SerializeParticipation();
-
-                }
+                await sm.Channel.SendMessageAsync("Only officers may use this command.");
+                return;
             }
+
+            foreach (var id in sm.Content.GetMentions())
+            {
+                if (!bot.Participation.ContainsKey(id)) bot.Participation[id] = 0;
+                bot.Participation[id]++;
+                await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+            }
+
+            bot.SerializeParticipation();
         }
 
         public static async Task SetUserPaps(Bot bot, SocketMessage sm)
         {
-            int newPaP = Utils.ReturnIntBetweenBrackets(sm.Content);
-
-            if (Utils.IsUserOfficer(sm))
+            if (!sm.IsFromOfficer())
             {
-                if (newPaP >= 0)
-                {
-                    foreach (var id in sm.Content.GetMentions())
-                    {
-                        if (!bot.Participation.ContainsKey(id)) bot.Participation[id] = 0;
-
-                        bot.Participation[id] = newPaP;
-                        await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
-
-                        bot.SerializeParticipation();
-                    }
-                }
-                else
-                {
-                    await sm.Channel.SendMessageAsync("Invalid Format");
-                }
+                await sm.Channel.SendMessageAsync("Only officers may use this command.");
+                return;
             }
-            else
+
+            var newPaP = Utils.ReturnIntBetweenBrackets(sm.Content);
+
+            if (newPaP < 0)
             {
-                await sm.Channel.SendMessageAsync("Only Officers May Use This Command");
+                await sm.Channel.SendMessageAsync("Invalid Format");
+                return;
+            }
+
+            foreach (var id in sm.Content.GetMentions())
+            {
+                bot.Participation[id] = newPaP;
+                await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+                bot.SerializeParticipation();
             }
         }
 
@@ -120,19 +100,20 @@ namespace TSGDiscord
 
         public static async Task PrintAllParticipationScores(Bot bot, SocketMessage sm)
         {
-            if (Utils.IsUserOfficer(sm))
+            if (!sm.IsFromOfficer())
             {
-                string allUsers = "";
-
-                foreach (var id in bot.Participation)
-                {
-                    allUsers += ("User: {0},  Participation Score: {1} \n", id.Key, id.Value);
-                }
-
-                Console.WriteLine(allUsers);
-
-                await sm.Channel.SendMessageAsync("Done!");
+                await sm.Channel.SendMessageAsync("Only officers may use this command.");
+                return;
             }
+
+            var allUsers = "";
+            foreach (var (key, value) in bot.Participation)
+            {
+                allUsers += $"User: {key},  Participation Score: {value}\n";
+            }
+            Console.WriteLine(allUsers);
+
+            await sm.Channel.SendMessageAsync("Done!");
         }
     }
 }

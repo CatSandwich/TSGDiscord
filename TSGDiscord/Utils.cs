@@ -107,18 +107,10 @@ namespace TSGDiscord
             }
         }
 
-        public static bool IsUserOfficer(SocketMessage sm)
+        public static bool IsFromOfficer(this SocketMessage sm)
         {
-            if (sm.Author is SocketGuildUser user)
-            {
-                if (user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id)))
-                {
-                    return true;
-                }
-
-            }
-
-            return false;
+            if (!(sm.Author is SocketGuildUser user)) return false;
+            return user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id));
         }
     }
 }
