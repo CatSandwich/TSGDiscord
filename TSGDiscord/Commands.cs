@@ -10,6 +10,12 @@ namespace TSGDiscord
 {
     public static class Commands
     {
+        public static async Task TestArgs(Bot bot, SocketMessage sm)
+        {
+            var s = string.Join("\n", sm.Content.GetArguments().Select(arg => $"{arg.Key}={arg.Value}"));
+            await sm.Channel.SendMessageAsync(s == "" ? "No args found" : s);
+        }
+
         public static async Task ReturnTimeToDailyReset(Bot bot, SocketMessage sm)
         {
             var now = DateTime.UtcNow;

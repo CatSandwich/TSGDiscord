@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,7 +11,35 @@ namespace TSGDiscord
 {
     public static class Utils
     {
+        private static readonly Regex ArgWithQuotes;
+        private static readonly Regex ArgWithoutQuotes;
+
+        static Utils()
+        {
+            // Capture characters that aren't '='
+            var argName = "([^=]+)";
+            // Capture any number of characters inside quotes
+            var inQuotes = "\"([^\"]*)\"";
+            // Capture characters that don't start with a quote and aren't whitespace
+            var notInQuotes = "([^\"][^\\s]*)";
+
+            ArgWithQuotes = new Regex($"-{argName}={inQuotes}", RegexOptions.Multiline | RegexOptions.Compiled);
+            ArgWithoutQuotes = new Regex($"-{argName}={notInQuotes}", RegexOptions.Multiline | RegexOptions.Compiled);
+        }
+
         public static string Mention(this ulong id) => $"<@!{id}>";
+
+        public static Dictionary<string, string> GetArguments(this string content)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var hit in ArgWithQuotes.Matches(content).Concat(ArgWithoutQuotes.Matches(content)))
+            {
+                dict[hit.Groups[1].Value] = hit.Groups[2].Value;
+            }
+            return dict;
+        }
+
+        public static string? GetArgument(this string content, string arg) => content.GetArguments().TryGetValue(arg, out var val) ? val : null;
 
         public static bool TryParseMention(string mention, out ulong id)
         {
