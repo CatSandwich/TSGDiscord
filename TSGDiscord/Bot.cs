@@ -18,6 +18,7 @@ namespace TSGDiscord
         public Dictionary<string, Func<Bot, SocketMessage, Task>> Commands =
             new Dictionary<string, Func<Bot, SocketMessage, Task>>()
             {
+                ["testargs"] = TSGDiscord.Commands.TestArgs,
                 ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
                 ["removepap"] = TSGDiscord.Commands.RemovePaps,
                 ["pap"] = TSGDiscord.Commands.AddOnePaP,
