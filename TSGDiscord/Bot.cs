@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Discord;
@@ -117,6 +118,26 @@ namespace TSGDiscord
             if (sm.Content.ToLower().Contains("praise joko"))
             {
                 await sm.Channel.SendMessageAsync("Praise Joko!");
+            }
+
+            // Upload arcdps logs automatically
+            foreach (var attachment in sm.Attachments)
+            {
+                if (!attachment.Filename.EndsWith(".zevtc")) continue;
+
+                // Assign to variable to suppress warning
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var result = await DpsReport.Upload(await attachment.Download());
+                        await sm.Channel.SendMessageAsync(result.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Exception while uploading log: {e}");
+                    }
+                });
             }
         }
 
