@@ -83,16 +83,48 @@ namespace TSGDiscord
 
         public static async Task RaidSignup(Bot bot, SocketMessage sm)
         {
-            var message = await sm.Channel.SendMessageAsync("Creating...");
-            var signup = new RaidsSignup(sm.Channel.Id, message.Id, new[]
+            var args = sm.Content.GetArguments();
+
+            #region Arguments
+            if (!args.TryGetValue("preset", out var preset))
             {
-                new RaidSlot("1️⃣", "Chrono Tank / Quick", 1),
-                new RaidSlot("2️⃣", "Druid", 1),
-                new RaidSlot("3️⃣", "Banner Slave", 1),
-                new RaidSlot("4️⃣", "Mirage / Alac", 1),
-                new RaidSlot("5️⃣", "HB / Quick", 1),
-                new RaidSlot("6️⃣", "DPS", 5)
-            });
+                await sm.Channel.SendMessageAsync("'preset' argument required.");
+                return;
+            }
+
+            if (!RaidsSignup.Presets.TryGetValue(preset, out var slots))
+            {
+                await sm.Channel.SendMessageAsync($"Unknown preset. Valid presets are: {string.Join(", ", RaidsSignup.Presets.Keys)}");
+                return;
+            }
+
+            if (!args.TryGetValue("start", out var startArg))
+            {
+                await sm.Channel.SendMessageAsync("'start' argument required.");
+                return;
+            }
+
+            if (!ulong.TryParse(startArg, out var start))
+            {
+                await sm.Channel.SendMessageAsync("Invalid start time. Must be unix timestamp.");
+                return;
+            }
+
+            if (!args.TryGetValue("end", out var endArg))
+            {
+                await sm.Channel.SendMessageAsync("'start' argument required.");
+                return;
+            }
+
+            if (!ulong.TryParse(endArg, out var end))
+            {
+                await sm.Channel.SendMessageAsync("Invalid end time. Must be unix timestamp.");
+                return;
+            }
+            #endregion
+
+            var message = await sm.Channel.SendMessageAsync("Creating...");
+            var signup = new RaidsSignup(sm.Channel.Id, message.Id, start, end, slots);
             bot.RaidSignups.Add(signup.MessageId, signup);
             bot.Serialize();
             await bot.EditRaidSignup(signup);
