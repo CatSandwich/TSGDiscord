@@ -9,26 +9,26 @@ namespace TSGDiscord
     [Serializable]
     public class RaidsSignup
     {
-        public static Dictionary<string, RaidSlot[]> Presets = new Dictionary<string, RaidSlot[]>
+        public static Dictionary<string, RaidSlot[]> Presets => new Dictionary<string, RaidSlot[]>
         {
             ["standard"] = new[]
             {
-                new RaidSlot("1️⃣", "Chrono Tank / Quick", 1),
-                new RaidSlot("2️⃣", "Druid", 1),
-                new RaidSlot("3️⃣", "Banner Slave", 1),
-                new RaidSlot("4️⃣", "Mirage / Alac", 1),
-                new RaidSlot("5️⃣", "HB / Quick", 1),
-                new RaidSlot("6️⃣", "DPS", 5)
+                new RaidSlot("<:Chronomancer:931401803793326080>", "Chrono Tank / Quick", 1),
+                new RaidSlot("<:Druid:931401803856244797>", "Druid", 1),
+                new RaidSlot("<:BattleStandard:931401803604578326>", "Banner Slave", 1),
+                new RaidSlot("<:Mirage:931401803583615007>", "Mirage / Alac", 1),
+                new RaidSlot("<:Firebrand:931401803810082826>", "HB / Quick", 1),
+                new RaidSlot("⚔️", "DPS", 5)
             },
             ["standardsubs"] = new[]
             {
-                new RaidSlot("1️⃣", "Chrono Tank / Quick", 1),
-                new RaidSlot("2️⃣", "Druid", 1),
-                new RaidSlot("3️⃣", "Banner Slave", 1),
-                new RaidSlot("4️⃣", "Mirage / Alac", 1),
-                new RaidSlot("5️⃣", "HB / Quick", 1),
-                new RaidSlot("6️⃣", "DPS", 5),
-                new RaidSlot("7️⃣", "Sub", 3)
+                new RaidSlot("<:Chronomancer:931401803793326080>", "Chrono Tank / Quick", 1),
+                new RaidSlot("<:Druid:931401803856244797>", "Druid", 1),
+                new RaidSlot("<:BattleStandard:931401803604578326>", "Banner Slave", 1),
+                new RaidSlot("<:Mirage:931401803583615007>", "Mirage / Alac", 1),
+                new RaidSlot("<:Firebrand:931401803810082826>", "HB / Quick", 1),
+                new RaidSlot("⚔️", "DPS", 5),
+                new RaidSlot("➕", "Sub", 3)
             }
         };
 

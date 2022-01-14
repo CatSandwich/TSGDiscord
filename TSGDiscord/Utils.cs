@@ -84,9 +84,11 @@ namespace TSGDiscord
                 prop.Embed = signup.CreateEmbed();
             });
 
-            foreach (var emoji in signup.Slots.Select(slot => slot.Emoji))
+            foreach (var str in signup.Slots.Select(slot => slot.Emoji))
             {
-                await message.AddReactionAsync(new Emoji(emoji));
+
+                if (!TryParseEmote(str, out var emote)) Console.WriteLine($"Failed to parse {str} into an emote.");
+                else await message.AddReactionAsync(emote);
             }
         }
 
@@ -112,6 +114,24 @@ namespace TSGDiscord
         {
             if (!(sm.Author is SocketGuildUser user)) return false;
             return user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id));
+        }
+
+        public static bool TryParseEmote(string str, out IEmote value)
+        {
+            if (Emote.TryParse(str, out var emote))
+            {
+                value = emote;
+                return true;
+            }
+
+            if (Emoji.TryParse(str, out var emoji))
+            {
+                value = emoji;
+                return true;
+            }
+
+            value = null;
+            return false;
         }
     }
 }
