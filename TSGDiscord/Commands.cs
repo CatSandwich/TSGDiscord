@@ -11,7 +11,14 @@ namespace TSGDiscord
     {
         public static Command Help = new Command("", async (bot, sm) =>
         {
-        
+            string help = "All Commands Require The Precursor Symbol of ! To Register As Commands \n\n";
+
+            foreach (var id in bot.Commands)
+            {
+                help += $"Command: \"!{id.Key}\" --- Description: {id.Value.Description} \n";
+            }
+
+            await sm.Author.SendMessageAsync(help);
         });
 
         public static Command TestScheduler = new Command("", async (bot, sm) =>
@@ -35,7 +42,7 @@ namespace TSGDiscord
             }, new TimeSpan(0, 0, repeat));
         });
 
-        public static Command RaidSignup = new Command("", async(bot, sm) =>
+        public static Command RaidSignup = new Command("Prints a raid signup sheet with usable reactions for signup", async(bot, sm) =>
         {
             var slots = GetRequiredSignupPresetArgument(sm);
             var start = GetRequiredUlongArgument(sm, "start");
