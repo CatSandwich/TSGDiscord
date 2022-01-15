@@ -2,12 +2,25 @@
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 
 namespace TSGDiscord
 {
     public static class Commands
     {
+        public static Command Help = new Command("", async (bot, sm) =>
+        {
+            string help = "All Commands Require The Precursor Symbol of ! To Register As Commands \n\n";
+
+            foreach (var id in bot.Commands)
+            {
+                help += $"Command: \"!{id.Key}\" --- Description: {id.Value.Description} \n";
+            }
+
+            await sm.Author.SendMessageAsync(help);
+        });
+
         public static Command TestScheduler = new Command("", async (bot, sm) =>
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
@@ -29,7 +42,7 @@ namespace TSGDiscord
             }, new TimeSpan(0, 0, repeat));
         });
 
-        public static Command RaidSignup = new Command("", async(bot, sm) =>
+        public static Command RaidSignup = new Command("Prints a raid signup sheet with usable reactions for signup", async(bot, sm) =>
         {
             var slots = GetRequiredSignupPresetArgument(sm);
             var start = GetRequiredUlongArgument(sm, "start");
@@ -57,11 +70,7 @@ namespace TSGDiscord
 
         public static Command AddOnePaP = new Command("", async (bot, sm) =>
         {
-            if (!sm.IsFromOfficer())
-            {
-                await sm.Channel.SendMessageAsync("Only officers may use this command.");
-                return;
-            }
+            RequireOfficerRole(sm);
 
             foreach (var id in sm.Content.GetMentions())
             {
@@ -75,7 +84,7 @@ namespace TSGDiscord
 
         public static Command RemovePaps = new Command("", async (bot, sm) =>
         {
-            RequireOfficerRole(sm);
+            RequireGMRole(sm);
 
             foreach (var id in sm.Content.GetMentions())
             {
@@ -110,14 +119,17 @@ namespace TSGDiscord
         {
             RequireOfficerRole(sm);
 
-            var allUsers = "";
             foreach (var (key, value) in bot.Participation)
             {
-                allUsers += $"User: {key},  Participation Score: {value}\n";
-            }
-            Console.WriteLine(allUsers);
+                string allUsers = $"User: {key},  Participation Score: {value}";
 
-            await sm.Channel.SendMessageAsync("Done!");
+                await sm.Author.SendMessageAsync(allUsers);
+
+                Console.WriteLine(allUsers);
+            }
+
+            await sm.Author.SendMessageAsync("All User Paps Printed");
+
         });
         #endregion
 
@@ -129,6 +141,8 @@ namespace TSGDiscord
         }
 
         private static void RequireOfficerRole(SocketMessage sm) => RequireRole(sm, Config.OfficerRoles);
+
+        private static void RequireGMRole(SocketMessage sm) => RequireRole(sm, Config.GuildMasterRoles);
 
         private static string GetRequiredStringArgument(SocketMessage sm, string name)
         {

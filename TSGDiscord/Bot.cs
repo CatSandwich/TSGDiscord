@@ -21,6 +21,7 @@ namespace TSGDiscord
         public Dictionary<string, Commands.Command> Commands =
             new Dictionary<string, Commands.Command>
             {
+                ["help"] = Help,
                 ["testscheduler"] = TestScheduler,
                 ["testrepeat"] = TestSchedulerRepeating,
                 ["timeuntilreset"] = ReturnTimeToDailyReset,
