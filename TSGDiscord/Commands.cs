@@ -120,7 +120,7 @@ namespace TSGDiscord
         #region Preconditions
         private static void RequireRole(SocketMessage sm, params ulong[] roles)
         {
-            if (!(sm.Author is SocketGuildUser socketUser)) throw new PreconditionFailedException($"Failed to find roles of user.");
+            if (!(sm.Author is SocketGuildUser socketUser)) throw new PreconditionFailedException("Failed to find roles of user.");
             if (socketUser.Roles.All(role => !roles.Contains(role.Id))) throw new PreconditionFailedException("Insufficient permissions.");
         }
 
