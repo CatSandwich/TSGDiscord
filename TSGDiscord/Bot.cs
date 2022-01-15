@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Discord;
@@ -13,12 +11,15 @@ namespace TSGDiscord
 {
     public class Bot : DiscordSocketClient
     {
+        public Scheduler Scheduler = new Scheduler();
+
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
         public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
         public Dictionary<string, Func<Bot, SocketMessage, Task>> Commands =
             new Dictionary<string, Func<Bot, SocketMessage, Task>>()
             {
+                ["testscheduler"] = TSGDiscord.Commands.TestScheduler,
                 ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
                 ["removepap"] = TSGDiscord.Commands.RemovePaps,
                 ["pap"] = TSGDiscord.Commands.AddOnePaP,
@@ -124,7 +125,7 @@ namespace TSGDiscord
             }
 
             // Praise joko
-            if (sm.Content.ToLower().Contains("praise joko"))
+            if (sm.Content.ToLower().Contains("praise joko") || sm.Content.ToLower().Contains("praise aurene"))
             {
                 await sm.Channel.SendMessageAsync("Praise Joko!");
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
@@ -8,6 +7,16 @@ namespace TSGDiscord
 {
     public static class Commands
     {
+        public static async Task TestScheduler(Bot bot, SocketMessage sm)
+        {
+            var waitTime = GetRequiredIntArgument(sm, "seconds");
+
+            bot.Scheduler.Schedule("test", DateTime.Now + new TimeSpan(0, 0, 0, waitTime), async () =>
+            {
+                await sm.Channel.SendMessageAsync("Scheduled message.");
+            });
+        }
+
         public static async Task RaidSignup(Bot bot, SocketMessage sm)
         {
             var slots = GetRequiredSignupPresetArgument(sm);
@@ -112,6 +121,14 @@ namespace TSGDiscord
 
             if (arg is null) throw new PreconditionFailedException($"Missing required argument: `{name}`");
             return arg;
+        }
+
+        private static int GetRequiredIntArgument(SocketMessage sm, string name)
+        {
+            var str = GetRequiredStringArgument(sm, name);
+
+            if (!int.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as ulong.");
+            return value;
         }
 
         private static ulong GetRequiredUlongArgument(SocketMessage sm, string name)
