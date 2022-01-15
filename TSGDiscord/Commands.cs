@@ -7,7 +7,7 @@ namespace TSGDiscord
 {
     public static class Commands
     {
-        public static async Task TestScheduler(Bot bot, SocketMessage sm)
+        public static Command TestScheduler = new Command("", async (bot, sm) =>
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
 
@@ -15,9 +15,9 @@ namespace TSGDiscord
             {
                 await sm.Channel.SendMessageAsync("Scheduled message.");
             });
-        }
+        });
 
-        public static async Task TestSchedulerRepeating(Bot bot, SocketMessage sm)
+        public static Command TestSchedulerRepeating = new Command("", async (bot, sm) =>
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
             var repeat = GetRequiredIntArgument(sm, "repeat");
@@ -26,7 +26,7 @@ namespace TSGDiscord
             {
                 await sm.Channel.SendMessageAsync("Scheduled message repeating.");
             }, new TimeSpan(0, 0, repeat));
-        }
+        });
 
         public static async Task RaidSignup(Bot bot, SocketMessage sm)
         {
@@ -176,5 +176,17 @@ namespace TSGDiscord
             }
         }
         #endregion
+
+        public class Command
+        {
+            public string Description;
+            public Func<Bot, SocketMessage, Task> Handler;
+
+            public Command(string description, Func<Bot, SocketMessage, Task> handler)
+            {
+                Description = description;
+                Handler = handler;
+            }
+        }
     }
 }

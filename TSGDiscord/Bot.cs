@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
+using static TSGDiscord.Commands;
+
 namespace TSGDiscord
 {
     public class Bot : DiscordSocketClient
@@ -16,11 +18,11 @@ namespace TSGDiscord
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
         public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
-        public Dictionary<string, Func<Bot, SocketMessage, Task>> Commands =
-            new Dictionary<string, Func<Bot, SocketMessage, Task>>()
+        public Dictionary<string, Commands.Command> Commands =
+            new Dictionary<string, Commands.Command>
             {
-                ["testscheduler"] = TSGDiscord.Commands.TestScheduler,
-                ["testrepeat"] = TSGDiscord.Commands.TestSchedulerRepeating,
+                ["testscheduler"] = TestScheduler,
+                ["testrepeat"] = TestSchedulerRepeating,
                 ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
                 ["removepap"] = TSGDiscord.Commands.RemovePaps,
                 ["pap"] = TSGDiscord.Commands.AddOnePaP,
@@ -102,7 +104,7 @@ namespace TSGDiscord
             if (sm.Author.IsBot) return;
 
             // Command handling
-            foreach (var (name, handler) in Commands)
+            foreach (var (name, command) in Commands)
             {
                 if (sm.Content.ToLower().StartsWith($"{Config.Prefix}{name}"))
                 {
@@ -111,7 +113,7 @@ namespace TSGDiscord
                     {
                         try
                         {
-                            await handler(this, sm);
+                            await command.Handler(this, sm);
                         }
                         catch (Commands.PreconditionFailedException ex)
                         {
