@@ -18,11 +18,11 @@ namespace TSGDiscord
         static Utils()
         {
             // Capture characters that aren't '='
-            var argName = "([^=]+)";
+            const string argName = "([^=]+)";
             // Capture any number of characters inside quotes
-            var inQuotes = "\"([^\"]*)\"";
+            const string inQuotes = "\"([^\"]*)\"";
             // Capture characters that don't start with a quote and aren't whitespace
-            var notInQuotes = "([^\"][^\\s]*)";
+            const string notInQuotes = "([^\"][^\\s]*)";
 
             ArgWithQuotes = new Regex($"-{argName}={inQuotes}", RegexOptions.Multiline | RegexOptions.Compiled);
             ArgWithoutQuotes = new Regex($"-{argName}={notInQuotes}", RegexOptions.Multiline | RegexOptions.Compiled);

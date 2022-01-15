@@ -20,6 +20,7 @@ namespace TSGDiscord
             new Dictionary<string, Func<Bot, SocketMessage, Task>>()
             {
                 ["testscheduler"] = TSGDiscord.Commands.TestScheduler,
+                ["testrepeat"] = TSGDiscord.Commands.TestSchedulerRepeating,
                 ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
                 ["removepap"] = TSGDiscord.Commands.RemovePaps,
                 ["pap"] = TSGDiscord.Commands.AddOnePaP,

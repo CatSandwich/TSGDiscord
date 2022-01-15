@@ -9,12 +9,23 @@ namespace TSGDiscord
     {
         public static async Task TestScheduler(Bot bot, SocketMessage sm)
         {
-            var waitTime = GetRequiredIntArgument(sm, "seconds");
+            var time = GetRequiredDateTimeArgument(sm, "time");
 
-            bot.Scheduler.Schedule("test", DateTime.Now + new TimeSpan(0, 0, 0, waitTime), async () =>
+            bot.Scheduler.Schedule("test", time, async () =>
             {
                 await sm.Channel.SendMessageAsync("Scheduled message.");
             });
+        }
+
+        public static async Task TestSchedulerRepeating(Bot bot, SocketMessage sm)
+        {
+            var time = GetRequiredDateTimeArgument(sm, "time");
+            var repeat = GetRequiredIntArgument(sm, "repeat");
+
+            bot.Scheduler.ScheduleRepeating("test", time, async () =>
+            {
+                await sm.Channel.SendMessageAsync("Scheduled message repeating.");
+            }, new TimeSpan(0, 0, repeat));
         }
 
         public static async Task RaidSignup(Bot bot, SocketMessage sm)
@@ -127,7 +138,7 @@ namespace TSGDiscord
         {
             var str = GetRequiredStringArgument(sm, name);
 
-            if (!int.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as ulong.");
+            if (!int.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as int.");
             return value;
         }
 
@@ -144,6 +155,14 @@ namespace TSGDiscord
             var str = GetRequiredStringArgument(sm, "preset");
 
             if (!RaidsSignup.Presets.TryGetValue(str, out var value)) throw new PreconditionFailedException($"Unknown preset `{str}`. Valid presets are: {string.Join(", ", RaidsSignup.Presets.Keys)}");
+            return value;
+        }
+
+        private static DateTime GetRequiredDateTimeArgument(SocketMessage sm, string name)
+        {
+            var str = GetRequiredStringArgument(sm, name);
+
+            if (!DateTime.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as DateTime.");
             return value;
         }
 
