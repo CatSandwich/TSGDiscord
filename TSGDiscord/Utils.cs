@@ -117,6 +117,12 @@ namespace TSGDiscord
             return user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id));
         }
 
+        public static bool IsFromGM(this SocketMessage sm)
+        {
+            if (!(sm.Author is SocketGuildUser user)) return false;
+            return user.Roles.Select(role => role.Id).Any(id => Config.GuildMasterRoles.Contains(id));
+        }
+
         public static bool TryParseEmote(string str, out IEmote value)
         {
             if (Emote.TryParse(str, out var emote))

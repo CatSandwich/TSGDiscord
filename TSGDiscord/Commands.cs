@@ -8,6 +8,11 @@ namespace TSGDiscord
 {
     public static class Commands
     {
+        public static Command Help = new Command("", async (bot, sm) =>
+        {
+        
+        });
+
         public static Command TestScheduler = new Command("", async (bot, sm) =>
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
@@ -57,11 +62,7 @@ namespace TSGDiscord
 
         public static Command AddOnePaP = new Command("", async (bot, sm) =>
         {
-            if (!sm.IsFromOfficer())
-            {
-                await sm.Channel.SendMessageAsync("Only officers may use this command.");
-                return;
-            }
+            RequireOfficerRole(sm);
 
             foreach (var id in sm.Content.GetMentions())
             {
@@ -75,7 +76,7 @@ namespace TSGDiscord
 
         public static Command RemovePaps = new Command("", async (bot, sm) =>
         {
-            RequireOfficerRole(sm);
+            RequireGMRole(sm);
 
             foreach (var id in sm.Content.GetMentions())
             {
@@ -129,6 +130,8 @@ namespace TSGDiscord
         }
 
         private static void RequireOfficerRole(SocketMessage sm) => RequireRole(sm, Config.OfficerRoles);
+
+        private static void RequireGMRole(SocketMessage sm) => RequireRole(sm, Config.GuildMasterRoles);
 
         private static string GetRequiredStringArgument(SocketMessage sm, string name)
         {
