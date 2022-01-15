@@ -23,12 +23,12 @@ namespace TSGDiscord
             {
                 ["testscheduler"] = TestScheduler,
                 ["testrepeat"] = TestSchedulerRepeating,
-                ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
-                ["removepap"] = TSGDiscord.Commands.RemovePaps,
-                ["pap"] = TSGDiscord.Commands.AddOnePaP,
-                ["setpap"] = TSGDiscord.Commands.SetUserPaps,
-                ["raidsignup"] = TSGDiscord.Commands.RaidSignup,
-                ["printallpaps"] = TSGDiscord.Commands.PrintAllParticipationScores,
+                ["timeuntilreset"] = ReturnTimeToDailyReset,
+                ["removepap"] = RemovePaps,
+                ["pap"] = AddOnePaP,
+                ["setpap"] = SetUserPaps,
+                ["raidsignup"] = RaidSignup,
+                ["printallpaps"] = PrintAllParticipationScores,
             };
 
         public Bot()

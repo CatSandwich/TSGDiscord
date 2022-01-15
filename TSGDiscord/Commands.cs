@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -28,7 +29,7 @@ namespace TSGDiscord
             }, new TimeSpan(0, 0, repeat));
         });
 
-        public static async Task RaidSignup(Bot bot, SocketMessage sm)
+        public static Command RaidSignup = new Command("", async(bot, sm) =>
         {
             var slots = GetRequiredSignupPresetArgument(sm);
             var start = GetRequiredUlongArgument(sm, "start");
@@ -39,9 +40,9 @@ namespace TSGDiscord
             bot.RaidSignups.Add(signup.MessageId, signup);
             bot.Serialize();
             await bot.EditRaidSignup(signup);
-        }
+        });
 
-        public static async Task ReturnTimeToDailyReset(Bot bot, SocketMessage sm)
+        public static Command ReturnTimeToDailyReset = new Command("", async (bot, sm) =>
         {
             var now = DateTime.UtcNow;
             var reset = new DateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0);
@@ -49,10 +50,12 @@ namespace TSGDiscord
             var timeRemaining = reset - now;
 
             await sm.Channel.SendMessageAsync($"The Time Remaining Until Daily Reset Is: {timeRemaining.Hours}:{timeRemaining.Minutes:D2}");
-        }
+        });
+
 
         #region Participation
-        public static async Task AddOnePaP(Bot bot, SocketMessage sm)
+
+        public static Command AddOnePaP = new Command("", async (bot, sm) =>
         {
             if (!sm.IsFromOfficer())
             {
@@ -68,9 +71,9 @@ namespace TSGDiscord
             }
 
             bot.SerializeParticipation();
-        }
+        });
 
-        public static async Task RemovePaps(Bot bot, SocketMessage sm)
+        public static Command RemovePaps = new Command("", async (bot, sm) =>
         {
             RequireOfficerRole(sm);
 
@@ -80,13 +83,13 @@ namespace TSGDiscord
                 await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
                 bot.SerializeParticipation();
             }
-        }
+        });
 
-        public static async Task SetUserPaps(Bot bot, SocketMessage sm)
+        public static Command SetUserPaps = new Command("", async (bot, sm) =>
         {
             RequireOfficerRole(sm);
 
-            var newPaP = Utils.ReturnIntBetweenBrackets(sm.Content);
+            var newPaP = GetRequiredIntArgument(sm, "score");
 
             if (newPaP < 0)
             {
@@ -100,9 +103,10 @@ namespace TSGDiscord
                 await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
                 bot.SerializeParticipation();
             }
-        }
+        });
 
-        public static async Task PrintAllParticipationScores(Bot bot, SocketMessage sm)
+
+        public static Command PrintAllParticipationScores = new Command("", async (bot, sm) =>
         {
             RequireOfficerRole(sm);
 
@@ -114,7 +118,7 @@ namespace TSGDiscord
             Console.WriteLine(allUsers);
 
             await sm.Channel.SendMessageAsync("Done!");
-        }
+        });
         #endregion
 
         #region Preconditions
