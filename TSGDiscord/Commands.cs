@@ -2,6 +2,7 @@
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 
 namespace TSGDiscord
@@ -111,14 +112,17 @@ namespace TSGDiscord
         {
             RequireOfficerRole(sm);
 
-            var allUsers = "";
             foreach (var (key, value) in bot.Participation)
             {
-                allUsers += $"User: {key},  Participation Score: {value}\n";
-            }
-            Console.WriteLine(allUsers);
+                string allUsers = $"User: {key},  Participation Score: {value}";
 
-            await sm.Channel.SendMessageAsync("Done!");
+                await sm.Author.SendMessageAsync(allUsers);
+
+                Console.WriteLine(allUsers);
+            }
+
+            await sm.Author.SendMessageAsync("All User Paps Printed");
+
         });
         #endregion
 
