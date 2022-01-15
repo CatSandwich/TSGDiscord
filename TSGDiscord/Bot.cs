@@ -19,7 +19,6 @@ namespace TSGDiscord
         public Dictionary<string, Func<Bot, SocketMessage, Task>> Commands =
             new Dictionary<string, Func<Bot, SocketMessage, Task>>()
             {
-                ["testargs"] = TSGDiscord.Commands.TestArgs,
                 ["timeuntilreset"] = TSGDiscord.Commands.ReturnTimeToDailyReset,
                 ["removepap"] = TSGDiscord.Commands.RemovePaps,
                 ["pap"] = TSGDiscord.Commands.AddOnePaP,
@@ -108,8 +107,18 @@ namespace TSGDiscord
                     // Assign to variable to suppress warning
                     var task = Task.Run(async () =>
                     {
-                        try { await handler(this, sm); }
-                        catch (Exception ex) { Console.WriteLine($"Exception in command {name}: {ex}"); }
+                        try
+                        {
+                            await handler(this, sm);
+                        }
+                        catch (Commands.PreconditionFailedException ex)
+                        {
+                            await sm.Channel.SendMessageAsync(ex.Reason);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Exception in command {name}: {ex}");
+                        }
                     });
                 }
             }
