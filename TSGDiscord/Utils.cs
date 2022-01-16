@@ -112,16 +112,26 @@ namespace TSGDiscord
             }
         }
 
-        public static bool IsFromOfficer(this SocketMessage sm)
-        {
-            if (!(sm.Author is SocketGuildUser user)) return false;
-            return user.Roles.Select(role => role.Id).Any(id => Config.OfficerRoles.Contains(id));
-        }
+        public static bool IsFromNCM(this SocketMessage sm) => sm.Author.IsNCM();
+        public static bool IsFromOfficer(this SocketMessage sm) => sm.Author.IsOfficer();
+        public static bool IsFromGM(this SocketMessage sm) => sm.Author.IsGM();
 
-        public static bool IsFromGM(this SocketMessage sm)
+        public static bool IsNCM(this SocketUser suser) => suser.HasRole(Config.NCMRoles);
+        public static bool IsOfficer(this SocketUser suser) => suser.HasRole(Config.OfficerRoles);
+        public static bool IsGM(this SocketUser suser) => suser.HasRole(Config.GuildMasterRoles);
+
+        public static bool HasRole(this SocketUser suser, params ulong[] roles)
         {
-            if (!(sm.Author is SocketGuildUser user)) return false;
-            return user.Roles.Select(role => role.Id).Any(id => Config.GuildMasterRoles.Contains(id));
+            if (suser is SocketGuildUser user)
+            {
+                return user.Roles.Select(role => role.Id).Any(roles.Contains);
+            }
+
+            SocketGuildUser? guser = Bot.Instance.GetUser(suser.Id);
+
+            if (guser is null) return false;
+
+            return guser.Roles.Select(role => role.Id).Any(roles.Contains);
         }
 
         public static bool TryParseEmote(string str, out IEmote value)

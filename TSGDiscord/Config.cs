@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace TSGDiscord
 {
@@ -10,7 +12,34 @@ namespace TSGDiscord
         public static readonly string RaidsSignupDataPath = @$"{Directory.GetCurrentDirectory()}\signups.dat";
         public static readonly string ParticipationTrackingDataPath = @$"{Directory.GetCurrentDirectory()}\participation.dat";
 
-        public static ulong[] OfficerRoles = {907036197816238081, 930346276107718726, 930346208331968553, 907036129298112582};
-        public static ulong[] GuildMasterRoles = {907036129298112582, 930332334971035708};
+        //The Order Of These Roles Now Matters - DO NOT CHANGE
+        public static ulong[] GuildMasterRoles = { 907036129298112582, 930332334971035708 };
+        public static ulong[] OfficerRoles = { 932048274687406140 , 930346208331968553 , 930346276107718726 , 932048508788310027 , 907036197816238081 };
+        public static ulong[] NCMRoles =
+        {
+            907036334894514237, 930345159835676702, 932047500586651719, 911031416945520660, 930345764247457863,
+            932047858717294693, 932047941907152947
+        };
+
+        public static (string name, ulong roleid, int ppoints)[] NcmTuples =
+        {
+            ("Guild Member", 907036334894514237, 0),
+            ("Corporal", 930345159835676702, 5),
+            ("Master Corporal", 932047500586651719, 30),
+            ("Sergeant", 911031416945520660, 60),
+            ("Warrant Officer", 930345764247457863, 100),
+            ("Master Warrant Officer", 932047858717294693, 150),
+            ("Chief Warrant Officer", 932047941907152947, 300)
+        };
+
+        public static (string name, ulong roleid, int ppoints)[] OfficerTuples =
+        {
+            ("Lieutenant", 932048274687406140, 0),
+            ("Captain", 930346208331968553, 30),
+            ("Major", 930346276107718726, 100),
+            ("Lieutenant Colonel", 932048508788310027, 200),
+            ("Colonel", 907036197816238081, 350)
+        };
+
     }
 }

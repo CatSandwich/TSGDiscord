@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -82,6 +84,49 @@ namespace TSGDiscord.Commands
             await sm.Channel.SendMessageAsync($"The Time Remaining Until Daily Reset Is: {timeRemaining.Hours}:{timeRemaining.Minutes:D2}");
         }
 
+        [Command("checkpromotion"), Description("Checks the mentioned users for eligibility for promotions, if found, promotes them")]
+        private static async Task CheckForPromotions(Bot bot, SocketMessage sm)
+        {
+            foreach (var id in sm.Content.GetMentions())
+            {
+                SocketGuildUser user = Bot.Instance.GetUser(sm.Author.Id);
+
+                ulong[] roles = user.Roles.Select(x => x.Id).ToArray();
+
+                if (sm.Author.IsNCM())
+                {
+                    var currentrank = Config.NcmTuples.Where(x => roles.Contains(x.roleid)).ToList()[0].roleid;
+                    var currentRankIndex = Array.FindIndex(Config.NcmTuples, x => x.roleid == currentrank);
+
+                    if (bot.Participation[id] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+                    {
+                        await user.RemoveRoleAsync(Config.NcmTuples[currentRankIndex].roleid);
+                        await user.AddRoleAsync(Config.NcmTuples[currentRankIndex + 1].roleid);
+                        await sm.Channel.SendMessageAsync(
+                            $"{id.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Mention()}");
+                    }
+                    
+                    return;
+                }
+                else if (sm.Author.IsOfficer())
+                {
+                    var currentrank = Config.OfficerTuples.Where(x => roles.Contains(x.roleid)).ToList()[0].roleid;
+                    var currentRankIndex = Array.FindIndex(Config.OfficerTuples, x => x.roleid == currentrank);
+
+
+                    if (bot.Participation[id] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+                    {
+                        await user.RemoveRoleAsync(Config.OfficerTuples[currentRankIndex].roleid);
+                        await user.AddRoleAsync(Config.OfficerTuples[currentRankIndex + 1].roleid);
+                        await sm.Channel.SendMessageAsync(
+                            $"{id.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Mention()}");
+                    }
+
+                    return;
+                }
+            }
+        }
+
 
         #region Participation
         [Command("pap", "participation"), RequireOfficer]
@@ -92,6 +137,8 @@ namespace TSGDiscord.Commands
                 if (!bot.Participation.ContainsKey(id)) bot.Participation[id] = 0;
                 bot.Participation[id]++;
                 await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+
+                await CheckForPromotions(bot, sm);
             }
 
             bot.SerializeParticipation();

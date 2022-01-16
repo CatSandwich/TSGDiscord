@@ -14,6 +14,8 @@ namespace TSGDiscord
 {
     public class Bot : DiscordSocketClient
     {
+        public static Bot Instance;
+
         public Scheduler Scheduler = new Scheduler();
 
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
@@ -23,6 +25,8 @@ namespace TSGDiscord
 
         public Bot()
         {
+            Instance = this;
+
             Log += _log;
             MessageReceived += _messageReceivedHandler;
             ReactionAdded += _reactionAddedHandler;
@@ -97,6 +101,7 @@ namespace TSGDiscord
         }
 
         public IRole? GetRole(ulong id) => GetGuild(Config.GuildId).GetRole(id);
+        public SocketGuildUser? GetUser(ulong id) => GetGuild(Config.GuildId).GetUser(id);
         
         private async Task _messageReceivedHandler(SocketMessage sm)
         {
