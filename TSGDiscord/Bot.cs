@@ -30,6 +30,7 @@ namespace TSGDiscord
             Deserialize();
             DeserializeParticipation();
             _initializeCommands();
+            SetStatus();
         }
 
         public async Task Run(string token)
@@ -43,6 +44,11 @@ namespace TSGDiscord
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
+        }
+
+        private async Task SetStatus()
+        {
+            await SetGameAsync("Type !help for a list of commands");
         }
 
         public void Serialize()
