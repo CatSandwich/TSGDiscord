@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-
-using static TSGDiscord.Commands;
+using TSGDiscord.Commands;
+using TSGDiscord.Commands.Attributes;
 
 namespace TSGDiscord
 {
@@ -18,19 +19,7 @@ namespace TSGDiscord
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
         public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
 
-        public Dictionary<string, Commands.Command> Commands =
-            new Dictionary<string, Commands.Command>
-            {
-                ["help"] = Help,
-                ["testscheduler"] = TestScheduler,
-                ["testrepeat"] = TestSchedulerRepeating,
-                ["timeuntilreset"] = ReturnTimeToDailyReset,
-                ["removepap"] = RemovePaps,
-                ["pap"] = AddOnePaP,
-                ["setpap"] = SetUserPaps,
-                ["raidsignup"] = RaidSignup,
-                ["printallpaps"] = PrintAllParticipationScores,
-            };
+        public Dictionary<string, Command> Commands = new Dictionary<string, Command>();
 
         public Bot()
         {
@@ -40,6 +29,7 @@ namespace TSGDiscord
             ReactionRemoved += _reactionRemovedHandler;
             Deserialize();
             DeserializeParticipation();
+            _initializeCommands();
         }
 
         public async Task Run(string token)
@@ -114,9 +104,13 @@ namespace TSGDiscord
                     {
                         try
                         {
+                            foreach (var precondition in command.Preconditions)
+                            {
+                                await precondition.Check(this, sm);
+                            }
                             await command.Handler(this, sm);
                         }
-                        catch (Commands.PreconditionFailedException ex)
+                        catch (Commands.Commands.PreconditionFailedException ex)
                         {
                             await sm.Channel.SendMessageAsync(ex.Reason);
                         }
@@ -203,6 +197,24 @@ namespace TSGDiscord
                 await this.EditRaidSignup(signup);
             });
             return Task.CompletedTask;
+        }
+
+        private void _initializeCommands()
+        {
+            var commands = GetType()
+                .Assembly
+                .GetTypes()
+                .SelectMany(type => type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                .Where(method => method.IsDefined(typeof(CommandAttribute)))
+                .Select(method => new Command(method));
+
+            foreach (var command in commands)
+            {
+                foreach (var name in command.Names)
+                {
+                    Commands[name] = command;
+                }
+            }
         }
     }
 }
