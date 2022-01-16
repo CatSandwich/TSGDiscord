@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -13,14 +15,26 @@ namespace TSGDiscord.Commands
         [Command("help"), Description("DMs you this message.")]
         private static async Task Help(Bot bot, SocketMessage sm)
         {
-            string help = "All Commands Require The Precursor Symbol of ! To Register As Commands \n\n";
+            var eb = new EmbedBuilder { Title = "Commands" };
 
-            foreach (var id in bot.Commands)
+            foreach (var command in bot.Commands.Values.Distinct())
             {
-                help += $"Command: `{Config.Prefix}{id.Key}` --- Description: {id.Value.Description} \n";
+                var description = new StringBuilder();
+                if(command.Names.Length > 1) description.AppendLine($"Aliases: {string.Join(", ", command.Names[1..].Select(name => $"{Config.Prefix}{name}"))}");
+                if(command.Description != null) description.AppendLine(command.Description);
+
+                foreach (var roles in command.Preconditions.OfType<RequireRoleAttribute>().Select(att => att.Roles))
+                {
+                    description.AppendLine($"Requires one role of: {string.Join(", ", roles.Select(role => bot.GetRole(role)?.Name ?? "null"))}");
+                }
+
+                var value = description.ToString();
+                if (value == "") value = "No information provided.";
+
+                eb.AddField($"{Config.Prefix}{command.Names[0]}", value);
             }
 
-            await sm.Author.SendMessageAsync(help);
+            await sm.Author.SendMessageAsync(embed: eb.Build());
         }
 
         [Command("testscheduler")]

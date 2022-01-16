@@ -30,6 +30,7 @@ namespace TSGDiscord
 
         public static string Mention(this ulong id) => $"<@!{id}>";
         public static string Timestamp(this ulong id) => $"<t:{id}>";
+        public static string Role(this ulong id) => $"<@&{id}>";
 
         public static Dictionary<string, string> GetArguments(this string content)
         {

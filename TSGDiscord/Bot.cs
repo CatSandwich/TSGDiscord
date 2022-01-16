@@ -90,6 +90,8 @@ namespace TSGDiscord
             }
         }
 
+        public IRole? GetRole(ulong id) => GetGuild(Config.GuildId).GetRole(id);
+        
         private async Task _messageReceivedHandler(SocketMessage sm)
         {
             if (sm.Author.IsBot) return;

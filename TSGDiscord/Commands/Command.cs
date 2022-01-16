@@ -22,6 +22,6 @@ namespace TSGDiscord.Commands
             Handler = (Func<Bot, SocketMessage, Task>)method.CreateDelegate(typeof(Func<Bot, SocketMessage, Task>));
         }
 
-        public override string ToString() => Names;
+        public override string ToString() => Names[0];
     }
 }
