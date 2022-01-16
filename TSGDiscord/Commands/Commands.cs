@@ -17,7 +17,7 @@ namespace TSGDiscord.Commands
 
             foreach (var id in bot.Commands)
             {
-                help += $"Command: \"!{id.Key}\" --- Description: {id.Value.Description} \n";
+                help += $"Command: `{Config.Prefix}{id.Key}` --- Description: {id.Value.Description} \n";
             }
 
             await sm.Author.SendMessageAsync(help);
