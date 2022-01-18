@@ -5,6 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+	
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+  	<DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+  	<DefineConstants>RELEASE</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.1.0" />
