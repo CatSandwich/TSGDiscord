@@ -129,13 +129,7 @@ namespace TSGDiscord.Commands
 
 
         #region Participation
-#if !RELEASE
-        [Command("papdebug", "participation"), RequireOfficer]
-#else
-  #if RELEASE
         [Command("pap", "participation"), RequireOfficer]
-  #endif
-#endif
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
             foreach (var id in sm.Content.GetMentions())
