@@ -170,7 +170,7 @@ namespace TSGDiscord
                 if (!RaidSignups.TryGetValue((await message.GetOrDownloadAsync()).Id, out var signup)) return;
 
                 // Get slot of corresponding emoji
-                var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
+                var slot = signup.Slots.FirstOrDefault(slot => (Utils.TryParseEmote(slot.Emoji, out var value) ? value : null)?.Name == reaction.Emote.Name);
 
                 // If slot doesn't exist, ignore
                 // If slot is full, ignore
