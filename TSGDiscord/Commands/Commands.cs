@@ -89,13 +89,13 @@ namespace TSGDiscord.Commands
         {
             foreach (var id in sm.Content.GetMentions())
             {
-                SocketGuildUser user = Bot.Instance.GetUser(sm.Author.Id);
+                SocketGuildUser user = Bot.Instance.GetUser(id);
 
                 ulong[] roles = user.Roles.Select(x => x.Id).ToArray();
 
                 if (sm.Author.IsNCM())
                 {
-                    var currentrank = Config.NcmTuples.Where(x => roles.Contains(x.roleid)).ToList()[0].roleid;
+                    var currentrank = Config.NcmTuples.First(x => roles.Contains(x.roleid)).roleid;
                     var currentRankIndex = Array.FindIndex(Config.NcmTuples, x => x.roleid == currentrank);
 
                     if (bot.Participation[id] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
@@ -103,7 +103,7 @@ namespace TSGDiscord.Commands
                         await user.RemoveRoleAsync(Config.NcmTuples[currentRankIndex].roleid);
                         await user.AddRoleAsync(Config.NcmTuples[currentRankIndex + 1].roleid);
                         await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Mention()}");
+                            $"{id.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
                     }
                     
                     return;
@@ -119,7 +119,7 @@ namespace TSGDiscord.Commands
                         await user.RemoveRoleAsync(Config.OfficerTuples[currentRankIndex].roleid);
                         await user.AddRoleAsync(Config.OfficerTuples[currentRankIndex + 1].roleid);
                         await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Mention()}");
+                            $"{id.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Role()}");
                     }
 
                     return;
@@ -129,7 +129,11 @@ namespace TSGDiscord.Commands
 
 
         #region Participation
+#if DEBUG
+        [Command("papdebug", "participation"), RequireOfficer]
+#else
         [Command("pap", "participation"), RequireOfficer]
+#endif
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
             foreach (var id in sm.Content.GetMentions())
@@ -185,9 +189,9 @@ namespace TSGDiscord.Commands
             await sm.Author.SendMessageAsync("All User Paps Printed");
         }
 
-        #endregion
+#endregion
 
-        #region Preconditions
+#region Preconditions
         private static string GetRequiredStringArgument(SocketMessage sm, string name)
         {
             var arg = sm.Content.GetArgument(name);
@@ -237,6 +241,6 @@ namespace TSGDiscord.Commands
                 Reason = reason;
             }
         }
-        #endregion
+#endregion
     }
 }
