@@ -129,7 +129,7 @@ namespace TSGDiscord.Commands
 
 
         #region Participation
-#if DEBUG
+#if !RELEASE
         [Command("papdebug", "participation"), RequireOfficer]
 #else
         [Command("pap", "participation"), RequireOfficer]
