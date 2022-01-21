@@ -196,7 +196,7 @@ namespace TSGDiscord
                 if (!reaction.User.IsSpecified || reaction.User.Value.IsBot) return;
                 if (!RaidSignups.TryGetValue((await message.GetOrDownloadAsync()).Id, out var signup)) return;
 
-                var slot = signup.Slots.FirstOrDefault(slot => slot.Emoji == reaction.Emote.Name);
+                var slot = signup.Slots.FirstOrDefault(slot => (Utils.TryParseEmote(slot.Emoji, out var value) ? value : null)?.Name == reaction.Emote.Name);
 
                 // If no corresponding slot, ignore
                 // If user not in slot, ignore
