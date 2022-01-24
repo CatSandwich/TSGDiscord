@@ -15,12 +15,9 @@ namespace TSGDiscord
     public class Bot : DiscordSocketClient
     {
         public static Bot Instance;
-
         public Scheduler Scheduler = new Scheduler();
 
         public Dictionary<ulong, RaidsSignup> RaidSignups = new Dictionary<ulong, RaidsSignup>();
-        public Dictionary<ulong, int> Participation = new Dictionary<ulong, int>();
-
         public Dictionary<string, Command> Commands = new Dictionary<string, Command>();
 
         public Bot() : base(new DiscordSocketConfig {AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers})
@@ -32,7 +29,6 @@ namespace TSGDiscord
             ReactionAdded += _reactionAddedHandler;
             ReactionRemoved += _reactionRemovedHandler;
             Deserialize();
-            DeserializeParticipation();
             _initializeCommands();
             SetStatus();
         }
@@ -62,13 +58,6 @@ namespace TSGDiscord
             binaryFormatter.Serialize(stream, RaidSignups.Values.ToArray());
         }
 
-        public void SerializeParticipation()
-        {
-            using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Create);
-            var binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Serialize(stream, Participation);
-        }
-
         public void Deserialize()
         {
             try
@@ -82,21 +71,6 @@ namespace TSGDiscord
             catch (FileNotFoundException)
             {
                 Console.WriteLine("No signup data found.");
-            }
-        }
-
-        public void DeserializeParticipation()
-        {
-            try
-            {
-                using var stream = File.Open(Config.ParticipationTrackingDataPath, FileMode.Open);
-                var binaryFormatter = new BinaryFormatter();
-                Participation = (Dictionary<ulong, int>)binaryFormatter.Deserialize(stream);
-                Console.WriteLine($"{Participation.Count} participation entries loaded.");
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("No participation data found.");
             }
         }
 

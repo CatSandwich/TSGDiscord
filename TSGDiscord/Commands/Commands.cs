@@ -90,48 +90,47 @@ namespace TSGDiscord.Commands
             await sm.Channel.SendMessageAsync($"The Time Remaining Until Daily Reset Is: {timeRemaining.Hours}:{timeRemaining.Minutes:D2}");
         }
 
-        private static async Task CheckForPromotions(Bot bot, SocketMessage sm, ulong uid)
-        {
-            SocketGuildUser user = Bot.Instance.GetUser(uid);
+        //private static async Task CheckForPromotions(Bot bot, SocketMessage sm, ulong uid)
+        //{
+        //    SocketGuildUser user = Bot.Instance.GetUser(uid);
 
-                ulong[] roles = user.Roles.Select(x => x.Id).ToArray();
+        //        ulong[] roles = user.Roles.Select(x => x.Id).ToArray();
 
-                if (sm.Author.IsNCM())
-                {
-                    var currentrank = Config.NcmTuples.First(x => roles.Contains(x.roleid)).roleid;
-                    var currentRankIndex = Array.FindIndex(Config.NcmTuples, x => x.roleid == currentrank);
+        //        if (sm.Author.IsNCM())
+        //        {
+        //            var currentrank = Config.NcmTuples.First(x => roles.Contains(x.roleid)).roleid;
+        //            var currentRankIndex = Array.FindIndex(Config.NcmTuples, x => x.roleid == currentrank);
 
-                    if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
-                    {
-                        await user.RemoveRoleAsync(Config.NcmTuples[currentRankIndex].roleid);
-                        await user.AddRoleAsync(Config.NcmTuples[currentRankIndex + 1].roleid);
-                        await sm.Channel.SendMessageAsync(
-                            $"{uid.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
-                    }
+        //            if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+        //            {
+        //                await user.RemoveRoleAsync(Config.NcmTuples[currentRankIndex].roleid);
+        //                await user.AddRoleAsync(Config.NcmTuples[currentRankIndex + 1].roleid);
+        //                await sm.Channel.SendMessageAsync(
+        //                    $"{uid.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
+        //            }
                     
-                    return;
-                }
-                else if (sm.Author.IsOfficer())
-                {
-                    var currentrank = Config.OfficerTuples.Where(x => roles.Contains(x.roleid)).ToList()[0].roleid;
-                    var currentRankIndex = Array.FindIndex(Config.OfficerTuples, x => x.roleid == currentrank);
+        //            return;
+        //        }
+        //        else if (sm.Author.IsOfficer())
+        //        {
+        //            var currentrank = Config.OfficerTuples.First(x => roles.Contains(x.roleid)).roleid;
+        //            var currentRankIndex = Array.FindIndex(Config.OfficerTuples, x => x.roleid == currentrank);
 
+        //            if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+        //            {
+        //                await user.RemoveRoleAsync(Config.OfficerTuples[currentRankIndex].roleid);
+        //                await user.AddRoleAsync(Config.OfficerTuples[currentRankIndex + 1].roleid);
+        //                await sm.Channel.SendMessageAsync(
+        //                    $"{uid.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Role()}");
+        //            }
 
-                    if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
-                    {
-                        await user.RemoveRoleAsync(Config.OfficerTuples[currentRankIndex].roleid);
-                        await user.AddRoleAsync(Config.OfficerTuples[currentRankIndex + 1].roleid);
-                        await sm.Channel.SendMessageAsync(
-                            $"{uid.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Role()}");
-                    }
-
-                    return;
-                }
-                else
-                {
-                    return;
-                }
-        }
+        //            return;
+        //        }
+        //        else
+        //        {
+        //            return;
+        //        }
+        //}
 
 
         #region Participation
@@ -139,48 +138,58 @@ namespace TSGDiscord.Commands
         [Description("Adds a participation point to the mentioned user, Format !pap @user - REQUIRES: OFFICER")]
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
-            foreach (var id in sm.Content.GetMentions())
+            foreach (var user in sm.Content.GetMentions())
             {
-                if (!bot.Participation.ContainsKey(id)) bot.Participation[id] = 0;
-                bot.Participation[id]++;
-                await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+                if (user is null) continue;
 
-                await CheckForPromotions(bot, sm, id);
+                if (Participation.AddPap(user, out var promotedTo))
+                {
+                    var rolesToRemove = Config.OfficerTuples.Select(tup => tup.roleid).Concat(Config.NcmTuples.Select(tup => tup.roleid));
+                    rolesToRemove = rolesToRemove.Where(role => user.Roles.Select(r => r.Id).Contains(role));
+
+                    await user.RemoveRolesAsync(rolesToRemove);
+                    await user.AddRoleAsync(promotedTo);
+                    await sm.Channel.SendMessageAsync($"{user.Id.Mention()}'s participation score is: {Participation.GetPoints(user.Id)}.");
+                    await sm.Channel.SendMessageAsync($"{user.Id.Mention()} has been promoted to: {promotedTo.Name}.");
+                }
+                else
+                {
+                    await sm.Channel.SendMessageAsync($"{user.Id.Mention()}'s participation score is: {Participation.GetPoints(user.Id)}.");
+                }
             }
 
-            bot.SerializeParticipation();
+            Participation.Serialize();
         }
 
-        [Command("setpap", "setparticipation"), RequireOfficer]
-        [Description("Sets a mentioned users participation score, Format !setpap @user -score=X - REQUIRES: OFFICER")]
-        private static async Task _setPap(Bot bot, SocketMessage sm)
-        {
-            var newPaP = GetRequiredIntArgument(sm, "score");
+        //[Command("setpap", "setparticipation"), RequireOfficer]
+        //[Description("Sets a mentioned users participation score, Format !setpap @user -score=X - REQUIRES: OFFICER")]
+        //private static async Task _setPap(Bot bot, SocketMessage sm)
+        //{
+        //    var newPaP = GetRequiredIntArgument(sm, "score");
 
-            if (newPaP < 0)
-            {
-                await sm.Channel.SendMessageAsync("Invalid Format");
-                return;
-            }
+        //    if (newPaP < 0)
+        //    {
+        //        await sm.Channel.SendMessageAsync("Invalid Format");
+        //        return;
+        //    }
 
-            foreach (var id in sm.Content.GetMentions())
-            {
-                bot.Participation[id] = newPaP;
-                await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
-                bot.SerializeParticipation();
-            }
-        }
+        //    foreach (var id in sm.Content.GetMentions())
+        //    {
+        //        bot.Participation[id] = newPaP;
+        //        await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
+        //        bot.SerializeParticipation();
+        //    }
+        //}
 
         [Command("printpap", "printparticipation"), RequireOfficer]
         [Description("DMs user a list of all userid's with their current participation scores - REQUIRES: OFFICER")]
         private static async Task _printPap(Bot bot, SocketMessage sm)
         {
-            foreach (var (key, value) in bot.Participation)
+            foreach (var (key, value) in Participation.Scores)
             {
-                string allUsers = $"User: {key},  Participation Score: {value}";
+                var allUsers = $"User: {key}, Participation Score: {value}";
 
                 await sm.Author.SendMessageAsync(allUsers);
-
                 Console.WriteLine(allUsers);
             }
 
