@@ -44,7 +44,6 @@ namespace TSGDiscord.Commands
         }
 
         [Command("testscheduler"), HideFromHelp]
-        [Description("DO NOT USE")]
         private static async Task TestScheduler(Bot bot, SocketMessage sm)
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
@@ -53,7 +52,6 @@ namespace TSGDiscord.Commands
         }
 
         [Command("testrepeating"), HideFromHelp]
-        [Description("DO NOT USE")]
         private static async Task TestSchedulerRepeating(Bot bot, SocketMessage sm)
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
