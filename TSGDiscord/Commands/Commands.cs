@@ -63,11 +63,11 @@ namespace TSGDiscord.Commands
         private static async Task RaidSignup(Bot bot, SocketMessage sm)
         {
             var slots = GetRequiredSignupPresetArgument(sm);
-            var start = GetRequiredUlongArgument(sm, "start");
-            var end = GetRequiredUlongArgument(sm, "end");
+            var start = (DateTimeOffset) GetRequiredDateTimeArgument(sm, "start");
+            var end = (DateTimeOffset) GetRequiredDateTimeArgument(sm, "end");
 
             var message = await sm.Channel.SendMessageAsync("Creating...");
-            var signup = new RaidsSignup(sm.Channel.Id, message.Id, start, end, slots);
+            var signup = new RaidsSignup(sm.Channel.Id, message.Id, (ulong) start.ToUnixTimeSeconds(), (ulong) end.ToUnixTimeSeconds(), slots);
             bot.RaidSignups.Add(signup.MessageId, signup);
             bot.Serialize();
             await bot.EditRaidSignup(signup);
@@ -209,6 +209,14 @@ namespace TSGDiscord.Commands
             var str = GetRequiredStringArgument(sm, name);
 
             if (!ulong.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as ulong.");
+            return value;
+        }
+
+        private static DateTime GetRequiredTimeArgument(SocketMessage sm, string name)
+        {
+            var str = GetRequiredStringArgument(sm, name);
+
+            if (!DateTime.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as DateTime.");
             return value;
         }
 
