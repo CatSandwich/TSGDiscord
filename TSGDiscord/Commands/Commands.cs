@@ -23,6 +23,8 @@ namespace TSGDiscord.Commands
 
             foreach (var command in bot.Commands.Values.Distinct())
             {
+                if (command.Hidden) continue;
+
                 var description = new StringBuilder();
                 if(command.Names.Length > 1) description.AppendLine($"Aliases: {string.Join(", ", command.Names[1..].Select(name => $"{Config.Prefix}{name}"))}");
                 if(command.Description != null) description.AppendLine(command.Description);
