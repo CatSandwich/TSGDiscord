@@ -84,12 +84,9 @@ namespace TSGDiscord.Commands
             await sm.Channel.SendMessageAsync($"The Time Remaining Until Daily Reset Is: {timeRemaining.Hours}:{timeRemaining.Minutes:D2}");
         }
 
-        [Command("checkpromotion"), Description("Checks the mentioned users for eligibility for promotions, if found, promotes them")]
-        private static async Task CheckForPromotions(Bot bot, SocketMessage sm)
+        private static async Task CheckForPromotions(Bot bot, SocketMessage sm, ulong uid)
         {
-            foreach (var id in sm.Content.GetMentions())
-            {
-                SocketGuildUser user = Bot.Instance.GetUser(id);
+            SocketGuildUser user = Bot.Instance.GetUser(uid);
 
                 ulong[] roles = user.Roles.Select(x => x.Id).ToArray();
 
@@ -98,12 +95,12 @@ namespace TSGDiscord.Commands
                     var currentrank = Config.NcmTuples.First(x => roles.Contains(x.roleid)).roleid;
                     var currentRankIndex = Array.FindIndex(Config.NcmTuples, x => x.roleid == currentrank);
 
-                    if (bot.Participation[id] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+                    if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
                     {
                         await user.RemoveRoleAsync(Config.NcmTuples[currentRankIndex].roleid);
                         await user.AddRoleAsync(Config.NcmTuples[currentRankIndex + 1].roleid);
                         await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
+                            $"{uid.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
                     }
                     
                     return;
@@ -114,22 +111,25 @@ namespace TSGDiscord.Commands
                     var currentRankIndex = Array.FindIndex(Config.OfficerTuples, x => x.roleid == currentrank);
 
 
-                    if (bot.Participation[id] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
+                    if (bot.Participation[uid] >= Config.NcmTuples[currentRankIndex + 1].ppoints)
                     {
                         await user.RemoveRoleAsync(Config.OfficerTuples[currentRankIndex].roleid);
                         await user.AddRoleAsync(Config.OfficerTuples[currentRankIndex + 1].roleid);
                         await sm.Channel.SendMessageAsync(
-                            $"{id.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Role()}");
+                            $"{uid.Mention()} You have been promoted to the rank of {Config.OfficerTuples[currentRankIndex + 1].roleid.Role()}");
                     }
 
                     return;
                 }
-            }
+                else
+                {
+                    return;
+                }
         }
 
 
         #region Participation
-        [Command("pap", "participation"), RequireOfficer]
+        [Command("testpap", "participation"), RequireOfficer]
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
             foreach (var id in sm.Content.GetMentions())
@@ -138,7 +138,7 @@ namespace TSGDiscord.Commands
                 bot.Participation[id]++;
                 await sm.Channel.SendMessageAsync($"{id.Mention()}'s Participation Score is: {bot.Participation[id]}");
 
-                await CheckForPromotions(bot, sm);
+                await CheckForPromotions(bot, sm, id);
             }
 
             bot.SerializeParticipation();
@@ -151,7 +151,7 @@ namespace TSGDiscord.Commands
             bot.SerializeParticipation();
         }
 
-        [Command("setpap", "setparticipation"), RequireOfficer]
+        [Command("testsetpap", "setparticipation"), RequireOfficer]
         private static async Task SetPap(Bot bot, SocketMessage sm)
         {
             var newPaP = GetRequiredIntArgument(sm, "score");
