@@ -15,7 +15,8 @@ namespace TSGDiscord.Commands
 {
     public static class Commands
     {
-        [Command("help"), Description("DMs you this message.")]
+        [Command("help")]
+        [Description("DM's user a list of all commands and their descriptions")]
         private static async Task Help(Bot bot, SocketMessage sm)
         {
             var eb = new EmbedBuilder { Title = "Commands" };
@@ -41,6 +42,7 @@ namespace TSGDiscord.Commands
         }
 
         [Command("testscheduler")]
+        [Description("DO NOT USE")]
         private static async Task TestScheduler(Bot bot, SocketMessage sm)
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
@@ -49,6 +51,7 @@ namespace TSGDiscord.Commands
         }
 
         [Command("testrepeating")]
+        [Description("DO NOT USE")]
         private static async Task TestSchedulerRepeating(Bot bot, SocketMessage sm)
         {
             var time = GetRequiredDateTimeArgument(sm, "time");
@@ -61,6 +64,7 @@ namespace TSGDiscord.Commands
         }
 
         [Command("raidsignup", "signup")]
+        [Description("Posts a raid signup embed with reaction roles")]
         private static async Task RaidSignup(Bot bot, SocketMessage sm)
         {
             var slots = GetRequiredSignupPresetArgument(sm);
@@ -75,6 +79,7 @@ namespace TSGDiscord.Commands
         }
 
         [Command("reset", "untilreset", "timeuntilreset", "toreset", "timetoreset")]
+        [Description("Returns the time until reset in GW2")]
         private static async Task TimeToReset(Bot bot, SocketMessage sm)
         {
             var now = DateTime.UtcNow;
@@ -131,6 +136,7 @@ namespace TSGDiscord.Commands
 
         #region Participation
         [Command("pap", "participation"), RequireOfficer]
+        [Description("Adds a participation point to the mentioned user, Format !pap @user - REQUIRES: OFFICER")]
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
             foreach (var id in sm.Content.GetMentions())
@@ -145,15 +151,9 @@ namespace TSGDiscord.Commands
             bot.SerializeParticipation();
         }
 
-        [Command("removepap", "removeparticipation"), RequireGM]
-        private static async Task RemovePap(Bot bot, SocketMessage sm)
-        {
-            bot.Participation = new Dictionary<ulong, int>();
-            bot.SerializeParticipation();
-        }
-
         [Command("setpap", "setparticipation"), RequireOfficer]
-        private static async Task SetPap(Bot bot, SocketMessage sm)
+        [Description("Sets a mentioned users participation score, Format !setpap @user -score=X - REQUIRES: OFFICER")]
+        private static async Task _setPap(Bot bot, SocketMessage sm)
         {
             var newPaP = GetRequiredIntArgument(sm, "score");
 
@@ -172,7 +172,8 @@ namespace TSGDiscord.Commands
         }
 
         [Command("printpap", "printparticipation"), RequireOfficer]
-        private static async Task PrintPap(Bot bot, SocketMessage sm)
+        [Description("DMs user a list of all userid's with their current participation scores - REQUIRES: OFFICER")]
+        private static async Task _printPap(Bot bot, SocketMessage sm)
         {
             foreach (var (key, value) in bot.Participation)
             {
@@ -186,9 +187,39 @@ namespace TSGDiscord.Commands
             await sm.Author.SendMessageAsync("All User Paps Printed");
         }
 
-#endregion
+        [Command("promotions")]
+        [Description("Posts all NCM & Officer roles and their required participation scores")]
+        private static async Task _promotions(Bot bot, SocketMessage sm)
+        {
+            var promotionsNCM = new StringBuilder();
+            var promotionsOfficer = new StringBuilder();
 
-#region Preconditions
+            promotionsNCM.Append("-------------------------------------\n");
+
+            promotionsNCM.Append(" --- NCM Ranks ---\n\n");
+            promotionsOfficer.Append(" --- Officer Ranks ---\n\n");
+
+            foreach (var (roleName,_,ppoints) in Config.NcmTuples)
+            {
+                promotionsNCM.Append($"Rank Name: {roleName}, Participation Points: {ppoints} \n");
+            }
+
+            promotionsNCM.Append("-------------------------------------\n");
+
+            foreach (var (roleName,_,ppoints) in Config.OfficerTuples)
+            {
+                promotionsOfficer.Append($"Rank Name: {roleName}, Participation Points: {ppoints} \n");
+            }
+
+            promotionsOfficer.Append("-------------------------------------\n");
+
+            await sm.Channel.SendMessageAsync(promotionsNCM.ToString());
+            await sm.Channel.SendMessageAsync(promotionsOfficer.ToString());
+        }
+
+        #endregion
+
+        #region Preconditions
         private static string GetRequiredStringArgument(SocketMessage sm, string name)
         {
             var arg = sm.Content.GetArgument(name);
