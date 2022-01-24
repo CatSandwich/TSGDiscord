@@ -129,7 +129,7 @@ namespace TSGDiscord.Commands
 
 
         #region Participation
-        [Command("testpap", "participation"), RequireOfficer]
+        [Command("pap", "participation"), RequireOfficer]
         private static async Task AddParticipation(Bot bot, SocketMessage sm)
         {
             foreach (var id in sm.Content.GetMentions())
@@ -151,7 +151,7 @@ namespace TSGDiscord.Commands
             bot.SerializeParticipation();
         }
 
-        [Command("testsetpap", "setparticipation"), RequireOfficer]
+        [Command("setpap", "setparticipation"), RequireOfficer]
         private static async Task SetPap(Bot bot, SocketMessage sm)
         {
             var newPaP = GetRequiredIntArgument(sm, "score");
