@@ -43,7 +43,7 @@ namespace TSGDiscord.Commands
             await sm.Author.SendMessageAsync(embed: eb.Build());
         }
 
-        [Command("testscheduler")]
+        [Command("testscheduler"), HideFromHelp]
         [Description("DO NOT USE")]
         private static async Task TestScheduler(Bot bot, SocketMessage sm)
         {
@@ -52,7 +52,7 @@ namespace TSGDiscord.Commands
             bot.Scheduler.Schedule("test", time, async () => { await sm.Channel.SendMessageAsync("Scheduled message."); });
         }
 
-        [Command("testrepeating")]
+        [Command("testrepeating"), HideFromHelp]
         [Description("DO NOT USE")]
         private static async Task TestSchedulerRepeating(Bot bot, SocketMessage sm)
         {
