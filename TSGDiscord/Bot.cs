@@ -23,7 +23,7 @@ namespace TSGDiscord
 
         public Dictionary<string, Command> Commands = new Dictionary<string, Command>();
 
-        public Bot()
+        public Bot() : base(new DiscordSocketConfig {AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers})
         {
             Instance = this;
 
@@ -101,8 +101,13 @@ namespace TSGDiscord
         }
 
         public IRole? GetRole(ulong id) => GetGuild(Config.GuildId).GetRole(id);
-        public SocketGuildUser? GetUser(ulong id) => GetGuild(Config.GuildId).GetUser(id);
-        
+        public new SocketGuildUser? GetUser(ulong id)
+        {
+            var guild = GetGuild(Config.GuildId);
+            var user = guild.GetUser(id);
+            return user;
+        }
+
         private async Task _messageReceivedHandler(SocketMessage sm)
         {
             if (sm.Author.IsBot) return;
