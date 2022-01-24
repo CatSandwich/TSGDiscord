@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -232,7 +233,7 @@ namespace TSGDiscord.Commands
         {
             var str = GetRequiredStringArgument(sm, name);
 
-            if (!DateTime.TryParse(str, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as DateTime.");
+            if (!DateTime.TryParse(str, null, DateTimeStyles.AssumeLocal, out var value)) throw new PreconditionFailedException($"Failed to parse argument `{name}` as DateTime.");
             return value;
         }
 
