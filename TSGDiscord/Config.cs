@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace TSGDiscord
 {
@@ -41,5 +39,29 @@ namespace TSGDiscord
             ("Colonel", 907036197816238081, 350)
         };
 
+
+        public static class Emoji
+        {
+            #region Commander
+            public const string CommanderBlue = "<:commander_blue:935248843057025114>";
+            #endregion
+
+            #region Classes
+            public const string Chronomancer = "<:Chronomancer:931401803793326080>";
+            public const string Druid = "<:Druid:931401803856244797>";
+            public const string Firebrand = "<:Firebrand:931401803810082826>";
+            public const string Mirage = "<:Mirage:931401803583615007>";
+            public const string Quickbrand = "<:Quickbrand:936346814418919546>";
+            #endregion
+
+            #region Skills
+            public const string BattleStandard = "<:BattleStandard:931401803604578326>";
+            #endregion
+
+            #region Role
+            public const string Dps = "⚔️";
+            public const string Sub = "➕";
+            #endregion
+        }
     }
 }

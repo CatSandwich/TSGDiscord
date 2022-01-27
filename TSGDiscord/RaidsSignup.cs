@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Discord;
 
+using static TSGDiscord.Config.Emoji;
+
 namespace TSGDiscord
 {
     [Serializable]
@@ -13,23 +15,23 @@ namespace TSGDiscord
         {
             ["standard"] = new[]
             {
-                new RaidSlot("<:commander_blue:935248843057025114>", "Commander", 1),
-                new RaidSlot("<:Druid:931401803856244797>", "Druid", 1),
-                new RaidSlot("<:BattleStandard:931401803604578326>", "Banner Slave", 1),
-                new RaidSlot("<:Mirage:931401803583615007>", "Renegade - Alacrity", 1),
-                new RaidSlot("<:Firebrand:931401803810082826>", "Healbrand - Quickness", 1),
-                new RaidSlot("<:Quickbrand:936346814418919546>", "Firebrand - Quickness", 1),
+                new RaidSlot(CommanderBlue, "Commander", 1),
+                new RaidSlot(Druid, "Druid", 1),
+                new RaidSlot(BattleStandard, "Banner Slave", 1),
+                new RaidSlot(Mirage, "Renegade - Alacrity", 1),
+                new RaidSlot(Firebrand, "Healbrand - Quickness", 1),
+                new RaidSlot(Quickbrand, "Firebrand - Quickness", 1),
                 new RaidSlot("⚔️", "DPS", 4)
             },
             ["standardsubs"] = new[]
             {
-                new RaidSlot("<:Chronomancer:931401803793326080>", "Chrono Tank / Quick", 1),
-                new RaidSlot("<:Druid:931401803856244797>", "Druid", 1),
-                new RaidSlot("<:BattleStandard:931401803604578326>", "Banner Slave", 1),
-                new RaidSlot("<:Mirage:931401803583615007>", "Mirage / Alac", 1),
-                new RaidSlot("<:Firebrand:931401803810082826>", "HB / Quick", 1),
-                new RaidSlot("⚔️", "DPS", 5),
-                new RaidSlot("➕", "Sub", 3)
+                new RaidSlot(Chronomancer, "Chrono Tank / Quick", 1),
+                new RaidSlot(Druid, "Druid", 1),
+                new RaidSlot(BattleStandard, "Banner Slave", 1),
+                new RaidSlot(Mirage, "Mirage / Alac", 1),
+                new RaidSlot(Firebrand, "HB / Quick", 1),
+                new RaidSlot(Dps, "DPS", 5),
+                new RaidSlot(Sub, "Sub", 3)
             }
         };
 
