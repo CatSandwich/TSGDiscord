@@ -18,7 +18,7 @@ namespace TSGDiscord
                 new RaidSlot("<:BattleStandard:931401803604578326>", "Banner Slave", 1),
                 new RaidSlot("<:Mirage:931401803583615007>", "Renegade - Alacrity", 1),
                 new RaidSlot("<:Firebrand:931401803810082826>", "Healbrand - Quickness", 1),
-                new RaidSlot("<:Quickbrand:936346826066513972>", "Firebrand - Quickness", 1),
+                new RaidSlot("<:Quickbrand:936346814418919546>", "Firebrand - Quickness", 1),
                 new RaidSlot("⚔️", "DPS", 4)
             },
             ["standardsubs"] = new[]
