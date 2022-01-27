@@ -21,7 +21,7 @@ namespace TSGDiscord
                 new RaidSlot(Mirage, "Renegade - Alacrity", 1),
                 new RaidSlot(Firebrand, "Healbrand - Quickness", 1),
                 new RaidSlot(Quickbrand, "Firebrand - Quickness", 1),
-                new RaidSlot("⚔️", "DPS", 4)
+                new RaidSlot(Sub, "DPS", 4)
             },
             ["standardsubs"] = new[]
             {
