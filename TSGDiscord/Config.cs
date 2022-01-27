@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace TSGDiscord
 {
@@ -42,6 +43,27 @@ namespace TSGDiscord
 
         public static class Emoji
         {
+            public static readonly Dictionary<string, string> Dictionary = new Dictionary<string, string>
+            {
+                ["commander_blue"] = CommanderBlue,
+
+                ["chronomancer"] = Chronomancer,
+                ["chrono"] = Chronomancer,
+                ["druid"] = Druid,
+                ["firebrand"] = Firebrand,
+                ["healbrand"] = Firebrand,
+                ["mirage"] = Mirage,
+                ["quickbrand"] = Quickbrand,
+
+                ["banner"] = BattleStandard,
+                ["banner_slave"] = BattleStandard,
+                ["battle_standard"] = BattleStandard,
+
+                ["dps"] = Dps,
+                ["sub"] = Sub,
+                ["subs"] = Sub
+            };
+
             #region Commander
             public const string CommanderBlue = "<:commander_blue:935248843057025114>";
             #endregion

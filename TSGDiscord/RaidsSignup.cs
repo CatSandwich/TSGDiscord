@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Discord;
 
 using static TSGDiscord.Config.Emoji;
@@ -15,21 +14,21 @@ namespace TSGDiscord
         {
             ["standard"] = new[]
             {
-                new RaidSlot(CommanderBlue, "Commander", 1),
-                new RaidSlot(Druid, "Druid", 1),
-                new RaidSlot(BattleStandard, "Banner Slave", 1),
-                new RaidSlot(Mirage, "Renegade - Alacrity", 1),
-                new RaidSlot(Firebrand, "Healbrand - Quickness", 1),
-                new RaidSlot(Quickbrand, "Firebrand - Quickness", 1),
+                new RaidSlot(CommanderBlue, "Commander"),
+                new RaidSlot(Druid, "Druid"),
+                new RaidSlot(BattleStandard, "Banner Slave"),
+                new RaidSlot(Mirage, "Renegade - Alacrity"),
+                new RaidSlot(Firebrand, "Healbrand - Quickness"),
+                new RaidSlot(Quickbrand, "Firebrand - Quickness"),
                 new RaidSlot(Sub, "DPS", 4)
             },
             ["standardsubs"] = new[]
             {
-                new RaidSlot(Chronomancer, "Chrono Tank / Quick", 1),
-                new RaidSlot(Druid, "Druid", 1),
-                new RaidSlot(BattleStandard, "Banner Slave", 1),
-                new RaidSlot(Mirage, "Mirage / Alac", 1),
-                new RaidSlot(Firebrand, "HB / Quick", 1),
+                new RaidSlot(Chronomancer, "Chrono Tank / Quick"),
+                new RaidSlot(Druid, "Druid"),
+                new RaidSlot(BattleStandard, "Banner Slave"),
+                new RaidSlot(Mirage, "Mirage / Alac"),
+                new RaidSlot(Firebrand, "HB / Quick"),
                 new RaidSlot(Dps, "DPS", 5),
                 new RaidSlot(Sub, "Sub", 3)
             }
@@ -66,7 +65,7 @@ namespace TSGDiscord
         public int Size;
         public List<ulong> Users;
 
-        public RaidSlot(string emoji, string name, int size)
+        public RaidSlot(string emoji, string name, int size = 1)
         {
             Emoji = emoji;
             Name = name;

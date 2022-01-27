@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -73,6 +72,53 @@ namespace TSGDiscord.Commands
 
             var message = await sm.Channel.SendMessageAsync("Creating...");
             var signup = new RaidsSignup(sm.Channel.Id, message.Id, (ulong) start.ToUnixTimeSeconds(), (ulong) end.ToUnixTimeSeconds(), slots);
+            bot.RaidSignups.Add(signup.MessageId, signup);
+            bot.Serialize();
+            await bot.EditRaidSignup(signup);
+        }
+
+        private const string CustomSignupCommand = "customsignup ";
+        [Command(CustomSignupCommand)]
+        [Description("Posts a custom signup")]
+        private static async Task CustomSignup(Bot bot, SocketMessage sm)
+        {
+            var start = (DateTimeOffset) GetRequiredDateTimeArgument(sm, "start");
+            var end = (DateTimeOffset) GetRequiredDateTimeArgument(sm, "end");
+
+            // Cut off command start
+            var content = sm.Content[(CustomSignupCommand.Length + 1)..];
+
+            // Matches (Name, emoji, size), capturing each variable
+            var regex = new Regex("\\(([^,]+), ([^,]+), (\\d+)\\)");
+            
+            var list = new List<RaidSlot>();
+
+            foreach (Match match in regex.Matches(content))
+            {
+                var emojiArg = match.Groups[2].Value.ToLower();
+                if (!Config.Emoji.Dictionary.TryGetValue(emojiArg, out var emoji))
+                {
+                    throw new PreconditionFailedException($"Unknown emoji {emojiArg}.");
+                }
+                
+                var name = match.Groups[1].Value;
+
+                var sizeArg = match.Groups[3].Value;
+                if (!int.TryParse(sizeArg, out var size))
+                {
+                    throw new PreconditionFailedException($"Failed to parse {sizeArg} as int.");
+                }
+
+                list.Add(new RaidSlot(emoji, name, size));
+            }
+
+            if (!list.Any())
+            {
+                throw new PreconditionFailedException("Requires at least one slot in the format (name, emoji, size)");
+            }
+
+            var message = await sm.Channel.SendMessageAsync("Creating...");
+            var signup = new RaidsSignup(sm.Channel.Id, message.Id, (ulong)start.ToUnixTimeSeconds(), (ulong)end.ToUnixTimeSeconds(), list.ToArray());
             bot.RaidSignups.Add(signup.MessageId, signup);
             bot.Serialize();
             await bot.EditRaidSignup(signup);
