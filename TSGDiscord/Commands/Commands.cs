@@ -136,6 +136,19 @@ namespace TSGDiscord.Commands
             await sm.Channel.SendMessageAsync($"The Time Remaining Until Daily Reset Is: {timeRemaining.Hours}:{timeRemaining.Minutes:D2}");
         }
 
+        [Command("drawlotto")]
+        [Description("Draws a winning lotto ticket")]
+        private static async Task Draw(Bot bot, SocketMessage sm)
+        {
+            var totalTickets = GetRequiredIntArgument(sm, "tickets");
+
+            Random r = new Random();
+
+            int winner = r.Next(1, totalTickets);
+
+            await sm.Channel.SendMessageAsync($"The Winning Lotto Ticket Is: {winner}");
+        }
+
         //private static async Task CheckForPromotions(Bot bot, SocketMessage sm, ulong uid)
         //{
         //    SocketGuildUser user = Bot.Instance.GetUser(uid);
@@ -154,7 +167,7 @@ namespace TSGDiscord.Commands
         //                await sm.Channel.SendMessageAsync(
         //                    $"{uid.Mention()} You have been promoted to the rank of {Config.NcmTuples[currentRankIndex + 1].roleid.Role()}");
         //            }
-                    
+
         //            return;
         //        }
         //        else if (sm.Author.IsOfficer())
