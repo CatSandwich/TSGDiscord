@@ -24,20 +24,20 @@ namespace TSGDiscord
         {
             ("Guild Member", 907036334894514237, 0),
             ("Corporal", 930345159835676702, 5),
-            ("Master Corporal", 932047500586651719, 30),
-            ("Sergeant", 911031416945520660, 60),
-            ("Warrant Officer", 930345764247457863, 100),
-            ("Master Warrant Officer", 932047858717294693, 150),
-            ("Chief Warrant Officer", 932047941907152947, 300)
+            ("Master Corporal", 932047500586651719, 20),
+            ("Sergeant", 911031416945520660, 40),
+            ("Warrant Officer", 930345764247457863, 60),
+            ("Master Warrant Officer", 932047858717294693, 80),
+            ("Chief Warrant Officer", 932047941907152947, 150)
         };
 
         public static (string name, ulong roleid, int ppoints)[] OfficerTuples =
         {
             ("Lieutenant", 932048274687406140, 0),
             ("Captain", 930346208331968553, 30),
-            ("Major", 930346276107718726, 100),
-            ("Lieutenant Colonel", 932048508788310027, 200),
-            ("Colonel", 907036197816238081, 350)
+            ("Major", 930346276107718726, 80),
+            ("Lieutenant Colonel", 932048508788310027, 150),
+            ("Colonel", 907036197816238081, 200)
         };
 
 
