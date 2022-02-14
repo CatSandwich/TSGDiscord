@@ -51,9 +51,11 @@ namespace TSGDiscord
                 ["chrono"] = Chronomancer,
                 ["druid"] = Druid,
                 ["firebrand"] = Firebrand,
-                ["healbrand"] = Firebrand,
-                ["mirage"] = Mirage,
+                ["healbrand"] = Healbrand,
+                ["hb"] = Healbrand,
                 ["quickbrand"] = Quickbrand,
+                ["qb"] = Quickbrand,
+                ["mirage"] = Mirage,
 
                 ["banner"] = BattleStandard,
                 ["banner_slave"] = BattleStandard,
@@ -71,9 +73,10 @@ namespace TSGDiscord
             #region Classes
             public const string Chronomancer = "<:Chronomancer:931401803793326080>";
             public const string Druid = "<:Druid:931401803856244797>";
-            public const string Firebrand = "<:Firebrand:931401803810082826>";
             public const string Mirage = "<:Mirage:931401803583615007>";
-            public const string Quickbrand = "<:Quickbrand:936346814418919546>";
+            public const string Firebrand = "<:Firebrand:931401803810082826>";
+            public const string Quickbrand = "<:Quickbrand:942854092731072532>";
+            public const string Healbrand = "<:Healbrand:942854039706677339>";
             #endregion
 
             #region Skills
