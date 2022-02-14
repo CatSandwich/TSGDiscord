@@ -18,7 +18,7 @@ namespace TSGDiscord
                 new RaidSlot(Druid, "Druid"),
                 new RaidSlot(BattleStandard, "Banner Slave"),
                 new RaidSlot(Mirage, "Renegade - Alacrity"),
-                new RaidSlot(Firebrand, "Healbrand - Quickness"),
+                new RaidSlot(Healbrand, "Healbrand - Quickness"),
                 new RaidSlot(Quickbrand, "Firebrand - Quickness"),
                 new RaidSlot(Sub, "DPS", 4)
             },
@@ -28,7 +28,7 @@ namespace TSGDiscord
                 new RaidSlot(Druid, "Druid"),
                 new RaidSlot(BattleStandard, "Banner Slave"),
                 new RaidSlot(Mirage, "Mirage / Alac"),
-                new RaidSlot(Firebrand, "HB / Quick"),
+                new RaidSlot(Healbrand, "HB / Quick"),
                 new RaidSlot(Dps, "DPS", 5),
                 new RaidSlot(Sub, "Sub", 3)
             }
